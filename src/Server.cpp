@@ -71,7 +71,7 @@ int Server::setup_server()
         std::cout << "\nServer closed.\n";
         exit(0);
     };*/
-    
+    /*
     while (true)
     {
         struct sockaddr_in client_addr;
@@ -90,7 +90,43 @@ int Server::setup_server()
 
         send(client_socket, "Welcome to the IRC server\n", 27, 0);
         close(client_socket);
+    }*/
+
+   while (true)
+{
+    struct sockaddr_in client_addr;
+    socklen_t client_len = sizeof(client_addr);
+    int client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_len);
+
+    if (client_socket < 0)
+    {
+        perror("Accept failed");
+        continue;
     }
+
+    std::cout << "Client connected.\n";
+
+    // Read messages from the client in a loop
+    char buffer[1024];
+    while (true)
+    {
+        memset(buffer, 0, sizeof(buffer));
+        int bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+
+        if (bytes_received <= 0)
+        {
+            std::cout << "Client disconnected or error occurred.\n";
+            break; // Exit the loop if the client disconnects or an error occurs
+        }
+
+        std::cout << "Received: " << buffer << "\n";
+
+        // Send a response back to the client
+        send(client_socket, "Message received\n", 17, 0);
+    }
+
+    close(client_socket); // Close the client socket after the client disconnects
+}
 
     close(server_socket);
 
