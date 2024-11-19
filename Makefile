@@ -2,7 +2,7 @@ NAME = ircserv
 
 BUILD_FLAGS = -Wall -Wextra -std=c++17 -Werror
 
-SRC = src/main src/Server
+SRC = src/main src/Server src/errors
 
 H	= includes/irc includes/Server
 

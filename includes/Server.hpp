@@ -29,6 +29,8 @@ class Server
 
         int getPort() const;
         std::string getPassword() const;
+
+        int setup_server();
 };
 
 }
