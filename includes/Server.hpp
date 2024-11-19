@@ -20,6 +20,9 @@ class Server
         int port;
         std::string password;
 
+        int initializeSocket();
+        void handleClient(int client_socket);
+
     public:
         ~Server();
         Server();

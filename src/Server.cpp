@@ -1,4 +1,5 @@
 #include "../includes/Server.hpp"
+#include <set> // For managing multiple client sockets
 
 namespace irc
 {
@@ -34,67 +35,123 @@ std::string Server::getPassword() const
     return this->password;
 }
 
-int Server::setup_server()
+int Server::initializeSocket()
 {
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket < 0)
-        return false;
+        throw std::runtime_error("Error creating socket");
+
     int opt = 1;
     setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-    struct sockaddr_in server_addr;
+
+    sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(port);
 
-    if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
+    if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
     {
-        perror("Bind failed");
         close(server_socket);
-        return false;
+        throw std::runtime_error("Bind failed");
     }
 
-    if (listen(server_socket, 10) < 0)
+    if (listen(server_socket, SOMAXCONN) < 0)
     {
-        perror("Listen failed");
         close(server_socket);
-        return false;
+        throw std::runtime_error("Listen failed");
     }
+
+    return server_socket;
+}
+
+void Server::handleClient(int client_socket)
+{
+    char buffer[1024] = {0};
+    int bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
+
+    if (bytes_received <= 0) // Client disconnected or error
+    {
+        std::cout << "Client disconnected: " << client_socket << "\n";
+        close(client_socket);
+    }
+    else // Process the message
+    {
+        std::cout << "Received from client " << client_socket << ": " << buffer << "\n";
+
+        // Respond to the client
+        std::string response = "Message received: " + std::string(buffer);
+        send(client_socket, response.c_str(), response.length(), 0);
+    }
+}
+
+int Server::setup_server()
+{
+    int server_socket = initializeSocket();
+    std::set<int> client_sockets; // Track all connected client sockets
 
     std::cout << "Server listening on port " << port << "...\n";
 
-    /*
-    signal(SIGINT, [](int signum)
-    {
-        //close(server_socket);
-        // try to close the server somehow
-        std::cout << "\nServer closed.\n";
-        exit(0);
-    };*/
-    
+    fd_set active_fds, read_fds;
+    FD_ZERO(&active_fds);
+    FD_SET(server_socket, &active_fds);
+    int max_fd = server_socket;
+
     while (true)
     {
-        struct sockaddr_in client_addr;
-        socklen_t client_len = sizeof(client_addr);
-        int client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_len);
+        read_fds = active_fds; // Copy the active set for monitoring
 
-        if (client_socket < 0)
+        if (select(max_fd + 1, &read_fds, nullptr, nullptr, nullptr) < 0)
         {
-            perror("Accept failed");
-            continue;
+            perror("Select failed");
+            break;
         }
 
-        char buffer[1024] = {0};
-        recv(client_socket, buffer, sizeof(buffer), 0);
-        std::cout << "Received: " << buffer << "\n";
+        for (int fd = 0; fd <= max_fd; ++fd)
+        {
+            if (FD_ISSET(fd, &read_fds)) // Activity detected
+            {
+                if (fd == server_socket) // New client connection
+                {
+                    sockaddr_in client_addr;
+                    socklen_t client_len = sizeof(client_addr);
+                    int client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_len);
 
-        send(client_socket, "Welcome to the IRC server\n", 27, 0);
+                    if (client_socket < 0)
+                    {
+                        perror("Accept failed");
+                        continue;
+                    }
+
+                    std::cout << "New client connected: " << client_socket << "\n";
+                    FD_SET(client_socket, &active_fds);
+                    client_sockets.insert(client_socket);
+                    if (client_socket > max_fd)
+                        max_fd = client_socket;
+                }
+                else // Activity on an existing client
+                {
+                    handleClient(fd);
+                    if (client_sockets.find(fd) != client_sockets.end())
+                    {
+                        // Client disconnected, remove from sets
+                        FD_CLR(fd, &active_fds);
+                        client_sockets.erase(fd);
+                    }
+                }
+            }
+        }
+    }
+
+    // Clean up on server exit
+    for (int client_socket : client_sockets)
+    {
         close(client_socket);
     }
 
     close(server_socket);
-
     return true;
 }
 
 }
+
