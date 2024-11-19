@@ -2,9 +2,9 @@ NAME = ircserv
 
 BUILD_FLAGS = -Wall -Wextra -std=c++17 -Werror
 
-SRC = src/main
+SRC = src/main src/Server
 
-H	= includes/irc
+H	= includes/irc includes/Server
 
 SRC_SUFF = $(addsuffix .cpp, $(SRC))
 HEADER_SUFF = $(addsuffix .hpp, $(H))

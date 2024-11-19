@@ -1,8 +1,3 @@
-#include <iostream>
-#include <string>
+#pragma once
 
-typedef struct s_input
-{
-    int port;
-    std::string password;
-}   t_input;
+#include "Server.hpp"
