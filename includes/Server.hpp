@@ -1,7 +1,15 @@
 #pragma once
 
 #include <iostream>
-#include <string>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <cstring>
+#include <signal.h>
 
 namespace irc
 {
