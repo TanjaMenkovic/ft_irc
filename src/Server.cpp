@@ -3,6 +3,10 @@
 namespace irc
 {
 
+bool Server::validateClientPassword(const std::string &clientPassword) const {
+    return clientPassword == password;
+}
+
 Server::Server(): port(0), password("unknown") {}
 
 Server::Server(int port, std::string password): port(port), password(password) {}
@@ -41,6 +45,7 @@ int Server::setup_server()
         return false;
     int opt = 1;
     setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
     struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
@@ -63,35 +68,6 @@ int Server::setup_server()
 
     std::cout << "Server listening on port " << port << "...\n";
 
-    /*
-    signal(SIGINT, [](int signum)
-    {
-        //close(server_socket);
-        // try to close the server somehow
-        std::cout << "\nServer closed.\n";
-        exit(0);
-    };*/
-    /*
-    while (true)
-    {
-        struct sockaddr_in client_addr;
-        socklen_t client_len = sizeof(client_addr);
-        int client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_len);
-
-        if (client_socket < 0)
-        {
-            perror("Accept failed");
-            continue;
-        }
-
-        char buffer[1024] = {0};
-        recv(client_socket, buffer, sizeof(buffer), 0);
-        std::cout << "Received: " << buffer << "\n";
-
-        send(client_socket, "Welcome to the IRC server\n", 27, 0);
-        close(client_socket);
-    }*/
-
    while (true)
 {
     struct sockaddr_in client_addr;
@@ -105,6 +81,35 @@ int Server::setup_server()
     }
 
     std::cout << "Client connected.\n";
+    std::string prompt = "Please enter the server password: ";
+    send(client_socket, prompt.c_str(), prompt.size(), 0);
+
+    char password_buffer[1024];
+    memset(password_buffer, 0, sizeof(password_buffer));
+    int bytes_received = recv(client_socket, password_buffer, sizeof(password_buffer) - 1, 0);
+
+    if (bytes_received <= 0)
+    {
+        std::cerr << "Failed to receive password or client disconnected.\n";
+        close(client_socket);
+        continue;
+    }
+
+    std::string client_password(password_buffer);
+    client_password.erase(client_password.find_last_not_of("\r\n") + 1); // Remove newline characters
+
+    // Validate password
+    if (!validateClientPassword(client_password))
+    {
+        std::string error_message = "ERROR: Incorrect password. Connection closed.\n";
+        send(client_socket, error_message.c_str(), error_message.size(), 0);
+        std::cerr << "Client provided an incorrect password. Connection terminated.\n";
+        close(client_socket);
+        continue;
+    }
+
+    std::string success_message = "Password accepted. Welcome to the server!\n";
+    send(client_socket, success_message.c_str(), success_message.size(), 0);
 
     // Read messages from the client in a loop
     char buffer[1024];

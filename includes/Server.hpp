@@ -31,6 +31,7 @@ class Server
         std::string getPassword() const;
 
         int setup_server();
+        bool validateClientPassword(const std::string &clientPassword) const;
 };
 
 }
