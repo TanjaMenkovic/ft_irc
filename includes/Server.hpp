@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <cstring>
 #include <signal.h>
+#include <vector>
+#include <poll.h>
 
 namespace irc
 {

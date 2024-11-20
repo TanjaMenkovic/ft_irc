@@ -68,73 +68,72 @@ int Server::setup_server()
 
     std::cout << "Server listening on port " << port << "...\n";
 
-   while (true)
-{
-    struct sockaddr_in client_addr;
-    socklen_t client_len = sizeof(client_addr);
-    int client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_len);
+    std::vector<pollfd> fds;
+    fds.push_back({server_socket, POLLIN, 0}); // Add listening socket to poll
 
-    if (client_socket < 0)
-    {
-        perror("Accept failed");
-        continue;
-    }
-
-    std::cout << "Client connected.\n";
-    std::string prompt = "Please enter the server password: ";
-    send(client_socket, prompt.c_str(), prompt.size(), 0);
-
-    char password_buffer[1024];
-    memset(password_buffer, 0, sizeof(password_buffer));
-    int bytes_received = recv(client_socket, password_buffer, sizeof(password_buffer) - 1, 0);
-
-    if (bytes_received <= 0)
-    {
-        std::cerr << "Failed to receive password or client disconnected.\n";
-        close(client_socket);
-        continue;
-    }
-
-    std::string client_password(password_buffer);
-    client_password.erase(client_password.find_last_not_of("\r\n") + 1); // Remove newline characters
-
-    // Validate password
-    if (!validateClientPassword(client_password))
-    {
-        std::string error_message = "ERROR: Incorrect password. Connection closed.\n";
-        send(client_socket, error_message.c_str(), error_message.size(), 0);
-        std::cerr << "Client provided an incorrect password. Connection terminated.\n";
-        close(client_socket);
-        continue;
-    }
-
-    std::string success_message = "Password accepted. Welcome to the server!\n";
-    send(client_socket, success_message.c_str(), success_message.size(), 0);
-
-    // Read messages from the client in a loop
     char buffer[1024];
-    while (true)
-    {
-        memset(buffer, 0, sizeof(buffer));
-        int bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
 
-        if (bytes_received <= 0)
-        {
-            std::cout << "Client disconnected or error occurred.\n";
-            break; // Exit the loop if the client disconnects or an error occurs
+    while (true) {
+        int poll_count = poll(fds.data(), fds.size(), -1); // Wait indefinitely
+        if (poll_count < 0) {
+            perror("Poll failed");
+            break;
         }
 
-        std::cout << "Received: " << buffer << "\n";
+        for (size_t i = 0; i < fds.size(); ++i) {
+            if (fds[i].revents & POLLIN) {
+                if (fds[i].fd == server_socket) {
+                    // Accept new client connection
+                    struct sockaddr_in client_addr;
+                    socklen_t client_len = sizeof(client_addr);
+                    int client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_len);
+                    if (client_socket < 0) {
+                        perror("Accept failed");
+                        continue;
+                    }
 
-        // Send a response back to the client
-        send(client_socket, "Message received\n", 17, 0);
+                    std::cout << "New client connected.\n";
+                    std::string prompt = "Please enter the server password: ";
+                    send(client_socket, prompt.c_str(), prompt.size(), 0);
+
+                    // Add new client to poll
+                    fds.push_back({client_socket, POLLIN, 0});
+                } else {
+                    // Data from existing client
+                    memset(buffer, 0, sizeof(buffer));
+                    int bytes_received = recv(fds[i].fd, buffer, sizeof(buffer) - 1, 0);
+                    if (bytes_received <= 0) {
+                        std::cout << "Client disconnected or error occurred.\n";
+                        close(fds[i].fd);
+                        fds.erase(fds.begin() + i); // Remove client socket
+                        --i;
+                    } else {
+                        std::string client_password(buffer);
+                        client_password.erase(client_password.find_last_not_of("\r\n") + 1); // Remove newline characters
+
+                        // Validate password
+                        if (!validateClientPassword(client_password)) {
+                            std::string error_message = "ERROR: Incorrect password. Connection closed.\n";
+                            send(fds[i].fd, error_message.c_str(), error_message.size(), 0);
+                            std::cerr << "Client provided an incorrect password. Connection terminated.\n";
+                            close(fds[i].fd);
+                            fds.erase(fds.begin() + i); // Remove client socket
+                            --i;
+                        } else {
+                            std::string success_message = "Password accepted. Welcome to the server!\n";
+                            send(fds[i].fd, success_message.c_str(), success_message.size(), 0);
+
+                            // Handle client messages
+                            std::string client_message = "Message received\n";
+                            send(fds[i].fd, client_message.c_str(), client_message.size(), 0);
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    close(client_socket); // Close the client socket after the client disconnects
-}
-
     close(server_socket);
-
     return true;
 }
 
