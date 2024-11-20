@@ -38,8 +38,7 @@ std::string Server::getPassword() const
     return this->password;
 }
 
-int Server::setup_server()
-{
+int Server::setup_server() {
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket < 0)
         return false;
@@ -70,6 +69,7 @@ int Server::setup_server()
 
     std::vector<pollfd> fds;
     fds.push_back({server_socket, POLLIN, 0}); // Add listening socket to poll
+    std::vector<std::pair<int, bool>> client_password_status; // Track if a client has validated their password
 
     char buffer[1024];
 
@@ -98,6 +98,7 @@ int Server::setup_server()
 
                     // Add new client to poll
                     fds.push_back({client_socket, POLLIN, 0});
+                    client_password_status.push_back({client_socket, false}); // Set as not validated initially
                 } else {
                     // Data from existing client
                     memset(buffer, 0, sizeof(buffer));
@@ -106,24 +107,32 @@ int Server::setup_server()
                         std::cout << "Client disconnected or error occurred.\n";
                         close(fds[i].fd);
                         fds.erase(fds.begin() + i); // Remove client socket
+                        client_password_status.erase(client_password_status.begin() + i); // Remove client password status
                         --i;
                     } else {
-                        std::string client_password(buffer);
-                        client_password.erase(client_password.find_last_not_of("\r\n") + 1); // Remove newline characters
+                        if (!client_password_status[i].second) {
+                            // Handle password phase
+                            std::string client_password(buffer);
+                            client_password.erase(client_password.find_last_not_of("\r\n") + 1); // Remove newline characters
 
-                        // Validate password
-                        if (!validateClientPassword(client_password)) {
-                            std::string error_message = "ERROR: Incorrect password. Connection closed.\n";
-                            send(fds[i].fd, error_message.c_str(), error_message.size(), 0);
-                            std::cerr << "Client provided an incorrect password. Connection terminated.\n";
-                            close(fds[i].fd);
-                            fds.erase(fds.begin() + i); // Remove client socket
-                            --i;
+                            // Validate password
+                            if (!validateClientPassword(client_password)) {
+                                std::string error_message = "ERROR: Incorrect password. Connection closed.\n";
+                                send(fds[i].fd, error_message.c_str(), error_message.size(), 0);
+                                std::cerr << "Client provided an incorrect password. Connection terminated.\n";
+                                close(fds[i].fd);
+                                fds.erase(fds.begin() + i); // Remove client socket
+                                client_password_status.erase(client_password_status.begin() + i); // Remove client password status
+                                --i;
+                            } else {
+                                std::string success_message = "Password accepted. Welcome to the server!\n";
+                                send(fds[i].fd, success_message.c_str(), success_message.size(), 0);
+
+                                // Mark password validated
+                                client_password_status[i].second = true;
+                            }
                         } else {
-                            std::string success_message = "Password accepted. Welcome to the server!\n";
-                            send(fds[i].fd, success_message.c_str(), success_message.size(), 0);
-
-                            // Handle client messages
+                            // Handle messaging phase
                             std::string client_message = "Message received\n";
                             send(fds[i].fd, client_message.c_str(), client_message.size(), 0);
                         }
