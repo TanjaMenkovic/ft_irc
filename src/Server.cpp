@@ -134,7 +134,7 @@ int Server::setup_server() {
                         } else {
                             // Handle messaging phase
                             std::string client_message = "Message received\n";
-                            send(fds[i].fd, client_message.c_str(), client_message.size(), 0);
+                            std::cout << "Client message: " << buffer << std::endl;
                         }
                     }
                 }
