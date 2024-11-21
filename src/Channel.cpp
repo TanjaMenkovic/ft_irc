@@ -1,17 +1,3 @@
-// private:
-//         std::vector<std::string> users;
-//         std::vector<std::string> operators;
-//         std::string topic;
-//         std::string password;
-
-//     public:
-//         ~Channel();
-//         Channel();
-//         Channel(std::vector<std::string> users, std::vector<std::string> operators);
-//         Channel(const Channel &copy);
-//         Channel &operator=(const Channel &src);
-
-
 #include "../includes/Channel.hpp"
 
 namespace irc
