@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <cstring>
 #include <signal.h>
+#include <vector>
+#include <poll.h>
 
 namespace irc
 {
@@ -31,6 +33,7 @@ class Server
         std::string getPassword() const;
 
         int setup_server();
+        bool validateClientPassword(const std::string &clientPassword) const;
 };
 
 }

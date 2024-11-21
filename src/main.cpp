@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 
     if (!isValidPort(argv[1]))
     {
-        //error
+        //errorr
         std::cerr << "Port is incorrect!" << std::endl;
         return EXIT_FAILURE;
     }
