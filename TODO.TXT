@@ -1,0 +1,23 @@
+
+#STARTING IRC SERVER
+./ircserver <port> <password>
+
+
+
+#STARTING IRSSI
+irssi
+
+Irssi commands:
+/connect 127.0.0.1 <port> <password>
+
+#Input from irssi when connecting to server:
+
+first input = "CAP LS
+PASS <password>
+NICK ohertzbe"
+
+second input= "USER ohertzbe ohertzbe 127.0.0.1 :Oliver Hertzberg"
+
+
+
+
