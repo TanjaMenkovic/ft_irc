@@ -1,7 +1,11 @@
 #include "../includes/Server.hpp"
+#include <cstring>    // For memset
+#include <unistd.h>   // For close()
+#include <sstream>    // For std::stringstream
+#include <iostream>   // For std::cout, std::cerr
+#include <poll.h>     // For pollfd
 
-namespace irc
-{
+namespace irc {
 
 bool Server::validateClientPassword(const std::string &clientPassword) const {
     return clientPassword == password;
@@ -13,35 +17,33 @@ Server::Server(int port, std::string password): port(port), password(password) {
 
 Server::~Server() {}
 
-Server::Server(const Server &copy)
-{
-	*this = copy;
+Server::Server(const Server &copy) {
+    *this = copy;
 }
 
-Server &Server::operator=(const Server &src)
-{
-	if (this != &src)
-    {
+Server &Server::operator=(const Server &src) {
+    if (this != &src) {
         this->port = src.getPort();
         this->password = src.getPassword();
     }
     return *this;
 }
 
-int Server::getPort() const
-{
+int Server::getPort() const {
     return this->port;
 }
 
-std::string Server::getPassword() const
-{
+std::string Server::getPassword() const {
     return this->password;
 }
 
 int Server::setup_server() {
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_socket < 0)
+    if (server_socket < 0) {
+        perror("Socket creation failed");
         return false;
+    }
+
     int opt = 1;
     setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
@@ -51,15 +53,13 @@ int Server::setup_server() {
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(port);
 
-    if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
-    {
+    if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         perror("Bind failed");
         close(server_socket);
         return false;
     }
 
-    if (listen(server_socket, 10) < 0)
-    {
+    if (listen(server_socket, 10) < 0) {
         perror("Listen failed");
         close(server_socket);
         return false;
@@ -110,31 +110,46 @@ int Server::setup_server() {
                         client_password_status.erase(client_password_status.begin() + i); // Remove client password status
                         --i;
                     } else {
-                        if (!client_password_status[i].second) {
-                            // Handle password phase
-                            std::string client_password(buffer);
-                            client_password.erase(client_password.find_last_not_of("\r\n") + 1); // Remove newline characters
+                        // Handle client input line by line
+                        std::string client_data(buffer);
+                        std::stringstream ss(client_data);
+                        std::string line;
 
-                            // Validate password
-                            if (!validateClientPassword(client_password)) {
-                                std::string error_message = "ERROR: Incorrect password. Connection closed.\n";
-                                send(fds[i].fd, error_message.c_str(), error_message.size(), 0);
-                                std::cerr << "Client provided an incorrect password. Connection terminated.\n";
-                                close(fds[i].fd);
-                                fds.erase(fds.begin() + i); // Remove client socket
-                                client_password_status.erase(client_password_status.begin() + i); // Remove client password status
-                                --i;
-                            } else {
-                                std::string success_message = "Password accepted. Welcome to the server!\n";
-                                send(fds[i].fd, success_message.c_str(), success_message.size(), 0);
-
-                                // Mark password validated
-                                client_password_status[i].second = true;
+                        while (std::getline(ss, line, '\n')) {
+                            // Remove trailing \r if present (from CRLF endings)
+                            if (!line.empty() && line.back() == '\r') {
+                                line.pop_back();
                             }
-                        } else {
-                            // Handle messaging phase
-                            std::string client_message = "Message received\n";
-                            std::cout << "Client message: " << buffer << std::endl;
+
+                            if (!client_password_status[i].second) {
+                                // Password validation phase
+                                if (line.find("PASS ") == 0) {
+                                    std::string client_password = line.substr(5); // Extract password
+                                    if (!validateClientPassword(client_password)) {
+                                        std::string error_message = "ERROR: Incorrect password. Connection closed.\n";
+                                        send(fds[i].fd, error_message.c_str(), error_message.size(), 0);
+                                        std::cerr << "Client provided an incorrect password. Connection terminated.\n";
+                                        close(fds[i].fd);
+                                        fds.erase(fds.begin() + i);
+                                        client_password_status.erase(client_password_status.begin() + i);
+                                        --i;
+                                    } else {
+                                        std::string success_message = "Password accepted. Welcome to the server!\n";
+                                        send(fds[i].fd, success_message.c_str(), success_message.size(), 0);
+                                        client_password_status[i].second = true; // Mark password validated
+                                    }
+                                } else {
+                                    std::string error_message = "ERROR: Please provide a valid password using PASS command.\n";
+                                    send(fds[i].fd, error_message.c_str(), error_message.size(), 0);
+                                }
+                            } else {
+                                // Handle messaging phase after password is validated
+                                if (line.find("CAP ") == 0) {
+                                    std::cout << "Received capability command: " << line << std::endl;
+                                } else {
+                                    std::cerr << "Unrecognized command: " << line << std::endl;
+                                }
+                            }
                         }
                     }
                 }

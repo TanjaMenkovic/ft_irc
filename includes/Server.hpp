@@ -12,6 +12,8 @@
 #include <signal.h>
 #include <vector>
 #include <poll.h>
+#include <sstream>
+
 
 namespace irc
 {
