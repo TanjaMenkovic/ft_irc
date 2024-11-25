@@ -24,6 +24,15 @@ class Server
         int port;
         std::string password;
 
+        int create_socket() const;
+        bool bind_and_listen(int server_socket) const;
+        bool poll_connections(int server_socket, std::vector<pollfd>& fds, std::vector<std::pair<int, bool>>& client_status);
+        void accept_new_client(int server_socket, std::vector<pollfd>& fds, std::vector<std::pair<int, bool>>& client_status);
+        bool process_client_input(int client_fd, std::vector<std::pair<int, bool>>& client_status, size_t index);
+        bool handle_password_phase(int client_fd, const std::string& line, std::vector<std::pair<int, bool>>& client_status, size_t index);
+        void handle_client_message(const std::string& line);
+        void close_client(int client_fd, std::vector<pollfd>& fds, std::vector<std::pair<int, bool>>& client_status, size_t index);
+
     public:
         ~Server();
         Server();
