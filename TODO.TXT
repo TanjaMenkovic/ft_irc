@@ -79,3 +79,7 @@ o = Give/take channel operator privilege
 /mode -o <user>
 
 
+*******************     QUESTIONS     *********************************************
+
+-Since user is supposed to be able to be connected on multiple channels, should the user class have a 
+vector of channels which will enable the change of nickname through all the channels the user is connected into?
