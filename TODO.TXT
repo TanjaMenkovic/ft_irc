@@ -1,23 +1,55 @@
-
-#STARTING IRC SERVER
+*********************
+*STARTING IRC SERVER*
+*********************
 ./ircserver <port> <password>
 
 
-
-#STARTING IRSSI
+****************
+*STARTING IRSSI*
+****************
 irssi
 
-Irssi commands:
+*****************************
+*IRSSI COMMANDS             *    
+*(commands case insensitive)*
+*****************************
+
+#CONNECT
 /connect 127.0.0.1 <port> <password>
 
-#Input from irssi when connecting to server:
+#JOIN CHANNEL
+(if channel doesn't exist it creates a new one and creator becomes admin)
+/join <channelname>
 
-first input = "CAP LS
-PASS <password>
-NICK ohertzbe"
+#MESSAGE
+/msg <user> <message>
 
-second input= "USER ohertzbe ohertzbe 127.0.0.1 :Oliver Hertzberg"
+#KICK
+/kick <user>
+
+#INVITE
+/invite <user>
+
+#TOPIC
+/topic (shows the current topic and who set it and when)
+/topic <topic you want to set>
 
 
+#MODE - CHANGE THE CHANNEL'S MODE
 
+i = set/remove Invite-only channel
+/mode +i
+/mode -i
+
+t = Set/remove the restrictions of the TOPIC command to channel operators
+/mode +t
+/mode -t
+
+k = Set/remove the channel key (password)
+/mode +k <new password>
+/mode -k
+
+o = Give/take channel operator privilege
+/mode +o <user>
+/mode -o <user>
 
