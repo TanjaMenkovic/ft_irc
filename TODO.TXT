@@ -91,3 +91,5 @@ vector of channels which will enable the change of nickname through all the chan
 -Figure out how to continue after client has connected with server
 
 -write code for the commands.
+
+-Rework the message I/O so that we are able to send messages bigger than the buffersize.
