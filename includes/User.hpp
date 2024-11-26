@@ -2,8 +2,12 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
+#include "Channel.hpp"
 
-namespace irc
+class Channel;
+
+namespace ircz
 {
 
 class User 
@@ -11,6 +15,10 @@ class User
     private:
         std::string nickname;
         std::string username;
+        // keep track of all channels user is in, so if nickname is changed, it is updated on all channels
+        std::vector<Channel*> channels;
+        // keep track of which channel user is currently typing in
+        Channel* current_channel;
 
     public:
         ~User();
