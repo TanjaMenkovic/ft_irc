@@ -83,3 +83,11 @@ o = Give/take channel operator privilege
 
 -Since user is supposed to be able to be connected on multiple channels, should the user class have a 
 vector of channels which will enable the change of nickname through all the channels the user is connected into?
+
+******************      NEXT       *************************************************
+
+-Need to parse users information and save it somewhere
+
+-Figure out how to continue after client has connected with server
+
+-write code for the commands.
