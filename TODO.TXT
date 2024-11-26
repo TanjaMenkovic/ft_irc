@@ -91,3 +91,5 @@ vector of channels which will enable the change of nickname through all the chan
 -Figure out how to continue after client has connected with server
 
 -write code for the commands.
+
+-So far the server is made to function with telnet, we need to update it so that is compatible with irssi and netcat.

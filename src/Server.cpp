@@ -123,24 +123,6 @@ bool Server::poll_connections(int server_socket, std::vector<pollfd>& fds, std::
     return true;
 }
 
-// Helper function to accept a new client
-void Server::accept_new_client(int server_socket, std::vector<pollfd>& fds, std::vector<std::pair<int, bool>>& client_status) {
-    struct sockaddr_in client_addr;
-    socklen_t client_len = sizeof(client_addr);
-    int client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_len);
-    if (client_socket < 0) {
-        perror("Accept failed");
-        return;
-    }
-
-    std::cout << "New client connected.\n";
-    std::string prompt = "Validating server password... ";
-    send(client_socket, prompt.c_str(), prompt.size(), 0);
-
-    fds.push_back({client_socket, POLLIN, 0});
-    client_status.push_back({client_socket, false});
-}
-
 // Helper function to process client input
 bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool>>& client_status, size_t index) {
     char buffer[1024];
