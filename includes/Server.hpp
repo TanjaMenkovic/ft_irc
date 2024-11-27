@@ -30,6 +30,7 @@ class Server
         void accept_new_client(int server_socket, std::vector<pollfd>& fds, std::vector<std::pair<int, bool>>& client_status);
         bool process_client_input(int client_fd, std::vector<std::pair<int, bool>>& client_status, size_t index);
         bool handle_password_phase(int client_fd, const std::string& line, std::vector<std::pair<int, bool>>& client_status, size_t index);
+        void send_welcome_message(int client_fd, const std::string& nickname);
         void handle_client_message(const std::string& line);
         void close_client(int client_fd, std::vector<pollfd>& fds, std::vector<std::pair<int, bool>>& client_status, size_t index);
 

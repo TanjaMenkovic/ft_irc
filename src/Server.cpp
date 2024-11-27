@@ -141,7 +141,8 @@ void Server::accept_new_client(int server_socket, std::vector<pollfd>& fds, std:
     client_status.push_back({client_socket, false});
 }
 
-// Helper function to process client input
+// I guess we need to figue out what IRSSI is expecting from the server to know its connected
+
 bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool>>& client_status, size_t index) {
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
@@ -152,25 +153,61 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
         return false;
     }
 
+    // Print the raw buffer to debug incoming data
+    std::cout << "Raw buffer received: [" << buffer << "]\n";
+
+    // Handle potential IRC line endings and command prefixes
     std::string client_data(buffer);
     std::stringstream ss(client_data);
-    std::string line;
 
-    while (std::getline(ss, line, '\n')) {
+    std::string line;
+    while (std::getline(ss, line)) {
+        // Strip \r if it exists (for IRC compatibility)
         if (!line.empty() && line.back() == '\r') {
-            line.pop_back(); // Remove trailing \r
+            line.pop_back();
         }
 
+        // Print each cleaned line
+        std::cout << "Cleaned Line: [" << line << "]\n";
+
+        if (line.empty()) {
+            continue;  // Skip empty lines
+        }
+
+        // Handle password phase if applicable
         if (!client_status[index].second) {
             if (!handle_password_phase(client_fd, line, client_status, index)) {
                 return false;
             }
+        // Once authenticated, send the welcome message if not done already
+        if (client_status[index].second && !client_status[index].first) {
+            send_welcome_message(client_fd, "username"); // Replace with actual username
+            client_status[index].first = true; // Mark welcome message as sent
         } else {
             handle_client_message(line);
+        }
+        /*
+        } else {
+            // Process IRC-like client commands
+            if (line[0] == '/') {
+                // Handle IRC-style commands if needed
+                std::cout << "IRC Command: [" << line << "]\n";
+                //handle_irc_command(client_fd, line);
+            } else {
+                handle_client_message(line);
+            }
+        */
         }
     }
 
     return true;
+}
+
+// Helper function to send the IRC welcome message
+void Server::send_welcome_message(int client_fd, const std::string& nickname) {
+    std::string welcome_msg = ":server.name 001 " + nickname + " :Welcome to the IRC Network, " + nickname + "!\r\n";
+    send(client_fd, welcome_msg.c_str(), welcome_msg.length(), 0);
+    std::cout << "Sent welcome message to client: " << nickname << "\n";
 }
 
 // Helper function to handle the password phase

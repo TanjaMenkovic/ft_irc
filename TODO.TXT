@@ -86,6 +86,8 @@ vector of channels which will enable the change of nickname through all the chan
 
 ******************      NEXT       *************************************************
 
+-Server will most likely need a name for example the welcome message the client is expecting
+
 -Need to parse users information and save it somewhere
 
 -Figure out how to continue after client has connected with server
