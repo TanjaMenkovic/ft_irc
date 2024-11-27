@@ -147,6 +147,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
 
+    std::string pong = "PING";
     int bytes_received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
     if (bytes_received <= 0) {
         std::cout << "Client disconnected or error occurred.\n";
@@ -183,29 +184,31 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
         if (client_status[index].second && !client_status[index].first) {
             send_welcome_message(client_fd, "username"); // Replace with actual username
             client_status[index].first = true; // Mark welcome message as sent
-        } else {
+        } 
+        else if (line == pong) {
+            handle_ping_pong(client_fd, "ft_irc");
+        }
+        else {
             handle_client_message(line);
         }
-        /*
-        } else {
-            // Process IRC-like client commands
-            if (line[0] == '/') {
-                // Handle IRC-style commands if needed
-                std::cout << "IRC Command: [" << line << "]\n";
-                //handle_irc_command(client_fd, line);
-            } else {
-                handle_client_message(line);
-            }
-        */
+
+
         }
     }
 
     return true;
 }
 
+// Handle the PING PONG interaction with the client
+void Server::handle_ping_pong(int client_fd, const std::string &server_name) {
+    std::string pong_response = "PONG " + server_name + "\r\n";
+    send(client_fd, pong_response.c_str(), pong_response.length(), 0);
+    std::cout << "Sent PONG response: " << pong_response << "\n";
+}
+
 // Helper function to send the IRC welcome message
 void Server::send_welcome_message(int client_fd, const std::string& nickname) {
-    std::string welcome_msg = ":server.name 001 " + nickname + " :Welcome to the IRC Network, " + nickname + "!\r\n";
+    std::string welcome_msg = ":ft_irc 001 " + nickname + " :Welcome to the IRC Network, " + nickname + "!\r\n";
     send(client_fd, welcome_msg.c_str(), welcome_msg.length(), 0);
     std::cout << "Sent welcome message to client: " << nickname << "\n";
 }
