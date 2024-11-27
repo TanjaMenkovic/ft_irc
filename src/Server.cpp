@@ -147,7 +147,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
 
-    std::string pong = "PING";
+    std::string expected_ping = "[PING ft_irc\n]";
     int bytes_received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
     if (bytes_received <= 0) {
         std::cout << "Client disconnected or error occurred.\n";
@@ -185,7 +185,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
             send_welcome_message(client_fd, "username"); // Replace with actual username
             client_status[index].first = true; // Mark welcome message as sent
         } 
-        else if (line == pong) {
+        if (buffer == expected_ping) {
             handle_ping_pong(client_fd, "ft_irc");
         }
         else {
@@ -201,6 +201,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
 
 // Handle the PING PONG interaction with the client
 void Server::handle_ping_pong(int client_fd, const std::string &server_name) {
+    std::cout << "responding to the PING\n";
     std::string pong_response = "PONG " + server_name + "\r\n";
     send(client_fd, pong_response.c_str(), pong_response.length(), 0);
     std::cout << "Sent PONG response: " << pong_response << "\n";
