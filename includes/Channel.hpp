@@ -23,6 +23,7 @@ class Channel
 
     public:
         ~Channel();
+        Channel();
         Channel(const std::string &name);
         Channel(const Channel &copy);
         Channel &operator=(const Channel &src);

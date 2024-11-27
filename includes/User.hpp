@@ -18,7 +18,8 @@ class User
     public:
         ~User();
         User(int fd);
-        User(std::string nickname, std::string username);
+        User();
+        User(std::string nickname, std::string username, int fd);
         User(const User &copy);
         User &operator=(const User &src);
 

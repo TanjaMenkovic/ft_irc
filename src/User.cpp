@@ -4,9 +4,11 @@ namespace irc
 {
     User::~User() {}
 
-    User::User(int fd): nickname("unknown"), username("unknown"), fd(fd) {}
+    User::User(int fd) : fd(fd), nickname("unknown"), username("unknown") {}
 
-    User::User(std::string nickname, std::string username): nickname(nickname), username(username) {}
+    User::User() : fd(-1), nickname(""), username("") {}
+
+    User::User(std::string nickname, std::string username, int fd): fd(fd), nickname(nickname), username(username) {}
 
     User::User(const User &copy)
     {

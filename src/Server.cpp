@@ -1,19 +1,15 @@
 #include "../includes/Server.hpp"
-#include <cstring>    // For memset
-#include <unistd.h>   // For close()
-#include <sstream>    // For std::stringstream
-#include <iostream>   // For std::cout, std::cerr
-#include <poll.h>     // For pollfd
 
 namespace irc {
 
+// Checks if the client's provided password is valid
 bool Server::validateClientPassword(const std::string &clientPassword) const {
     return clientPassword == password;
 }
 
-Server::Server(): port(0), password("unknown") {}
+Server::Server(): port(0), password("unknown"), users(), channels() {}
 
-Server::Server(int port, std::string password): port(port), password(password) {}
+Server::Server(int port, std::string password): port(port), password(password), users(), channels() {}
 
 Server::~Server() {}
 
@@ -35,6 +31,10 @@ int Server::getPort() const {
 
 std::string Server::getPassword() const {
     return this->password;
+}
+
+const std::map<int, irc::User>& Server::getUsers() const {
+    return this->users;
 }
 
 int Server::setup_server() {
@@ -106,13 +106,15 @@ bool Server::poll_connections(int server_socket, std::vector<pollfd>& fds, std::
         return false;
     }
 
+    // Iterate through the file descriptors and handle events
     for (size_t i = 0; i < fds.size(); ++i) {
         if (fds[i].revents & POLLIN) {
             if (fds[i].fd == server_socket) {
                 accept_new_client(server_socket, fds, client_status);
             } else {
                 int client_fd = fds[i].fd;
-                if (!process_client_input(client_fd, client_status, i)) {
+                // Validate if client status is valid and exists before processing input
+                if (i < client_status.size() && !process_client_input(client_fd, client_status, i)) {
                     close_client(client_fd, fds, client_status, i);
                     --i; // Adjust index as client is removed
                 }
@@ -138,11 +140,16 @@ void Server::accept_new_client(int server_socket, std::vector<pollfd>& fds, std:
     send(client_socket, prompt.c_str(), prompt.size(), 0);
 
     fds.push_back({client_socket, POLLIN, 0});
-    client_status.push_back({client_socket, false});
+    client_status.push_back({client_socket, false}); // False means client hasn't authenticated
 }
 
 // Helper function to process client input
 bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool>>& client_status, size_t index) {
+    if (index >= client_status.size()) {
+        std::cerr << "Invalid index: " << index << std::endl;
+        return false;  // Exit if the index is invalid
+    }
+
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
 
@@ -161,12 +168,12 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
             line.pop_back(); // Remove trailing \r
         }
 
-        if (!client_status[index].second) {
+        if (!client_status[index].second) { // Check if client is authenticated
             if (!handle_password_phase(client_fd, line, client_status, index)) {
-                return false;
+                return false; // If password is incorrect, disconnect the client
             }
         } else {
-            handle_client_message(line);
+            handle_client_message(client_fd, line); // Process the command after authentication
         }
     }
 
@@ -185,22 +192,50 @@ bool Server::handle_password_phase(int client_fd, const std::string& line, std::
         } else {
             std::string success_message = "Password accepted. Welcome to the server!\n";
             send(client_fd, success_message.c_str(), success_message.size(), 0);
-            client_status[index].second = true;
+            client_status[index].second = true; // Mark client as authenticated
         }
     } else if (line.find("CAP ") == 0) {
         // Suppress errors for CAP commands
         std::cout << "Received capability command: " << line << std::endl;
     } else if (!line.empty()) {
-        std::cout << "Received unexpected command: " << line << std::endl;
+        std::cout << "Received unexpected command during password phase: " << line << std::endl;
     }
 
     return true;
 }
 
 // Helper function to handle client messages after password validation
-void Server::handle_client_message(const std::string& line) {
-    if (line.find("CAP ") == 0) {
-        std::cout << "Received capability command: " << line << std::endl;
+void Server::handle_client_message(int client_fd, const std::string& line) {
+    if (line.find("NICK ") == 0) {
+        std::string nickname = line.substr(5);
+        users[client_fd].setNickname(nickname);
+        std::cout << "User set nickname: " << nickname << std::endl;
+
+        // Send server welcome messages
+        std::string welcome = 
+            ":server_name 001 " + nickname + " :Welcome to the IRC network\r\n"
+            ":server_name 002 " + nickname + " :Your host is server_name, running version 1.0\r\n"
+            ":server_name 003 " + nickname + " :This server was created today\r\n";
+        send(client_fd, welcome.c_str(), welcome.size(), 0);
+
+    } else if (line.find("USER ") == 0) {
+        // Handle USER command
+        users[client_fd].setUsername(line.substr(5)); // Set username
+        std::cout << "User set username: " << users[client_fd].getUsername() << std::endl;
+
+    } else if (line.find("JOIN ") == 0) {
+        // Handle JOIN command
+        std::string channel_name = line.substr(5);
+        if (channels.find(channel_name) == channels.end()) {
+            channels[channel_name] = Channel(channel_name); // Create new channel
+        }
+        channels[channel_name].addUser(users[client_fd]);
+
+        std::cout << "User joined channel: " << channel_name << std::endl;
+
+        // Optionally send JOIN response
+        std::string join_response = ":" + users[client_fd].getNickname() + " JOIN :" + channel_name + "\r\n";
+        send(client_fd, join_response.c_str(), join_response.size(), 0);
     } else {
         std::cerr << "Unrecognized command: " << line << std::endl;
     }
@@ -212,6 +247,5 @@ void Server::close_client(int client_fd, std::vector<pollfd>& fds, std::vector<s
     fds.erase(fds.begin() + index);
     client_status.erase(client_status.begin() + index);
 }
-
 
 }
