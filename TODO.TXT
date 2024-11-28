@@ -86,10 +86,12 @@ vector of channels which will enable the change of nickname through all the chan
 
 ******************      NEXT       *************************************************
 
+-Server will most likely need a name for example the welcome message the client is expecting
+
 -Need to parse users information and save it somewhere
 
 -Figure out how to continue after client has connected with server
 
 -write code for the commands.
 
--So far the server is made to function with telnet, we need to update it so that is compatible with irssi and netcat.
+-Rework the message I/O so that we are able to send messages bigger than the buffersize.
