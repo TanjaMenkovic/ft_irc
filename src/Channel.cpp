@@ -4,7 +4,11 @@ namespace irc
 {
     Channel::~Channel() {}
 
-    Channel::Channel(const std::string &name): name(name) {}
+    Channel::Channel() 
+    : topic(""), password(""), name(""), user_limit(-1), invite_only(false), topic_restricted_to_operators(false) {}
+
+    Channel::Channel(const std::string &name) 
+    : topic(""), password(""), name(name), user_limit(-1), invite_only(false), topic_restricted_to_operators(false) {}
 
     Channel::Channel(const Channel &copy)
     {
@@ -135,7 +139,12 @@ namespace irc
     
     bool Channel::removeOperator(const User &user)
     {
+        if (operators.find(user.getNickname()) == operators.end()) {
+            std::cout << "Operator is not in the channel!" << std::endl;
+            return false; 
+        }
         operators.erase(user.getNickname());
+        return true;
     }
     
     // Check if a user is an operator in the channel
