@@ -183,7 +183,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
         }
 
         // Print each cleaned line
-        std::cout << "Cleaned Line: [" << line << "]\n";
+        std::cout << "Cleaned Line: " << line << "\n";
 
         if (line.empty()) {
             continue;  // Skip empty lines
@@ -209,14 +209,12 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
         }
 
         // Handle PING message with raw format [PING server_name\n]
-        if (line.rfind("[PING", 0) == 0 && line.back() == '\n') {
+        if (line.find("PING ") == 0) {
             // Remove the leading '[PING ' and trailing '\n'
             std::string server_name = line.substr(6, line.length() - 7);  // 6 to skip "[PING " and -7 to remove "]\n"
 
-            std::cout << "Received PING from server: " << server_name << std::endl;
-            handle_ping_pong(client_fd, server_name);
-        } else {
-            handle_client_message(line);
+            std::cout << "Received PING from CLIENT: " << std::endl;
+            handle_ping_pong(client_fd, line, server_name);
         }
     }
 
@@ -266,12 +264,23 @@ bool Server::handle_user(int client_fd, const std::string& line)
     return false;
 }
 
+// :tantalum.libera.chat PONG tantalum.libera.chat :tantalum.libera.chat
+
+void Server::handle_ping_pong(int client_fd, const std::string& line, const std::string &server_name) {
+    if (line.find("PING ") == 0) {
+        std::cout << "responding to the PING\n";
+        std::string pong_response = ":" + server_name + "PONG" + server_name + " :" + "server_name" "\r\n";
+        send(client_fd, pong_response.c_str(), pong_response.length(), 0);
+    }
+}
+
+/*
 // Handle the PING PONG interaction with the client
 void Server::handle_ping_pong(int client_fd, const std::string &server_name) {
     std::cout << "responding to the PING\n";
     std::string pong_response = "PONG :" + server_name + "\r\n";
     send(client_fd, pong_response.c_str(), pong_response.length(), 0);
-}
+}*/
 
 // Helper function to send the IRC welcome message
 void Server::send_welcome_message(int client_fd, const std::string& nickname) {
