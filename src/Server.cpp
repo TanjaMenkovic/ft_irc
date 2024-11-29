@@ -80,7 +80,16 @@ bool Server::bind_and_listen(int server_socket) const {
     struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
+    //server_addr.sin_addr.s_addr = INADDR_ANY;
+    //server_addr.sin_port = htons(port);
+
+    // Set the specific IP address
+    if (inet_pton(AF_INET, "0.0.0.0", &server_addr.sin_addr) <= 0) {
+        perror("Invalid IP address");
+        close(server_socket);
+        return false;
+    }
+
     server_addr.sin_port = htons(port);
 
     if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
@@ -147,7 +156,6 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
 
-    std::string expected_ping = "[PING ft_irc\n]";
     int bytes_received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
     if (bytes_received <= 0) {
         std::cout << "Client disconnected or error occurred.\n";
@@ -160,8 +168,8 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
     // Handle potential IRC line endings and command prefixes
     std::string client_data(buffer);
     std::stringstream ss(client_data);
-
     std::string line;
+    
     while (std::getline(ss, line)) {
         // Strip \r if it exists (for IRC compatibility)
         if (!line.empty() && line.back() == '\r') {
@@ -180,19 +188,23 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
             if (!handle_password_phase(client_fd, line, client_status, index)) {
                 return false;
             }
+        }
+
         // Once authenticated, send the welcome message if not done already
         if (client_status[index].second && !client_status[index].first) {
             send_welcome_message(client_fd, "username"); // Replace with actual username
             client_status[index].first = true; // Mark welcome message as sent
-        } 
-        if (buffer == expected_ping) {
-            handle_ping_pong(client_fd, "ft_irc");
         }
-        else {
+
+        // Handle PING message with raw format [PING server_name\n]
+        if (line.rfind("[PING", 0) == 0 && line.back() == '\n') {
+            // Remove the leading '[PING ' and trailing '\n'
+            std::string server_name = line.substr(6, line.length() - 7);  // 6 to skip "[PING " and -7 to remove "]\n"
+
+            std::cout << "Received PING from server: " << server_name << std::endl;
+            handle_ping_pong(client_fd, server_name);
+        } else {
             handle_client_message(line);
-        }
-
-
         }
     }
 
@@ -202,9 +214,8 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
 // Handle the PING PONG interaction with the client
 void Server::handle_ping_pong(int client_fd, const std::string &server_name) {
     std::cout << "responding to the PING\n";
-    std::string pong_response = "PONG " + server_name + "\r\n";
+    std::string pong_response = "PONG :" + server_name + "\r\n";
     send(client_fd, pong_response.c_str(), pong_response.length(), 0);
-    std::cout << "Sent PONG response: " << pong_response << "\n";
 }
 
 // Helper function to send the IRC welcome message
