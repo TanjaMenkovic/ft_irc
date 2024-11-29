@@ -166,7 +166,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
     }
 
     // Print the raw buffer to debug incoming data
-    std::cout << "Raw buffer received: [" << buffer << "]\n";
+    std::cout << "Raw buffer received: " << buffer << "\n";
 
     // Handle potential IRC line endings and command prefixes
     std::string client_data(buffer);
