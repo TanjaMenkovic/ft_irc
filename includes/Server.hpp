@@ -13,6 +13,10 @@
 #include <vector>
 #include <poll.h>
 #include <sstream>
+#include <map>
+
+#include "User.hpp"
+#include "Channel.hpp"
 
 
 namespace irc
@@ -23,6 +27,8 @@ class Server
     private:
         int port;
         std::string password;
+        std::map<int, irc::User> users;
+        std::map<std::string, irc::Channel> channels;
 
         int create_socket() const;
         bool bind_and_listen(int server_socket) const;
@@ -34,6 +40,8 @@ class Server
         void handle_ping_pong(int client_fd, const std::string &server_name);
         void handle_client_message(const std::string& line);
         void close_client(int client_fd, std::vector<pollfd>& fds, std::vector<std::pair<int, bool>>& client_status, size_t index);
+        bool handle_nick(int client_fd, const std::string& line);
+        bool handle_user(int client_fd, const std::string& line);
 
     public:
         ~Server();

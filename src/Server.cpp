@@ -139,6 +139,9 @@ void Server::accept_new_client(int server_socket, std::vector<pollfd>& fds, std:
 
     fds.push_back({client_socket, POLLIN, 0});
     client_status.push_back({client_socket, false});
+
+    // Create a User instance and store it in the users map
+    users[client_socket] = User(client_socket);
 }
 
 // I guess we need to figue out what IRSSI is expecting from the server to know its connected
@@ -160,6 +163,8 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
     // Handle potential IRC line endings and command prefixes
     std::string client_data(buffer);
     std::stringstream ss(client_data);
+    bool nick = false;
+    bool user = false;
 
     std::string line;
     while (std::getline(ss, line)) {
@@ -175,14 +180,22 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
             continue;  // Skip empty lines
         }
 
+        if (nick == false)
+            nick = handle_nick(client_fd, line);
+
+        if (user == false)
+            user = handle_user(client_fd, line);
+
         // Handle password phase if applicable
         if (!client_status[index].second) {
+
             if (!handle_password_phase(client_fd, line, client_status, index)) {
                 return false;
             }
-        // Once authenticated, send the welcome message if not done already
-        if (client_status[index].second && !client_status[index].first) {
-            send_welcome_message(client_fd, "username"); // Replace with actual username
+        }
+
+        if (client_status[index].second && !client_status[index].first && nick && user) {
+            send_welcome_message(client_fd, users[client_fd].getNickname()); // Replace with actual username
             client_status[index].first = true; // Mark welcome message as sent
         } 
         if (buffer == expected_ping) {
@@ -191,12 +204,31 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
         else {
             handle_client_message(line);
         }
-
-
-        }
     }
 
     return true;
+}
+
+bool Server::handle_nick(int client_fd, const std::string& line)
+{
+    if (line.find("NICK ") == 0) {
+        std::string nickname = line.substr(5);
+        users[client_fd].setNickname(nickname);
+        std::cout << "User set nickname: " << users[client_fd].getNickname() << std::endl;
+        return true;
+    }
+    return false;
+}
+
+bool Server::handle_user(int client_fd, const std::string& line)
+{
+    if (line.find("USER ") == 0){
+        std::string username = line.substr(5);
+        users[client_fd].setUsername(username);
+        std::cout << "User set username: " << users[client_fd].getUsername() << std::endl;
+        return true;
+    }
+    return false;
 }
 
 // Handle the PING PONG interaction with the client
