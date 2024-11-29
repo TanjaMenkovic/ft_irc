@@ -40,6 +40,7 @@ class Server
         void handle_ping_pong(int client_fd, const std::string &server_name);
         void handle_client_message(const std::string& line);
         void close_client(int client_fd, std::vector<pollfd>& fds, std::vector<std::pair<int, bool>>& client_status, size_t index);
+        bool isNicknameTaken(const std::string &nickname) const;
         bool handle_nick(int client_fd, const std::string& line);
         bool handle_user(int client_fd, const std::string& line);
 
