@@ -223,10 +223,28 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
     return true;
 }
 
+bool Server::isNicknameTaken(const std::string &nickname) const {
+    for (const auto &user : users) {
+        if (user.second.getNickname() == nickname) {
+            return true; // Nickname is taken
+        }
+    }
+    return false; // Nickname is available
+}
+
 bool Server::handle_nick(int client_fd, const std::string& line)
 {
     if (line.find("NICK ") == 0) {
         std::string nickname = line.substr(5);
+
+        std::string original = nickname;
+        int counter = 1;
+
+        while (isNicknameTaken(nickname)) {
+            nickname = original + std::to_string(counter);
+            counter++;
+        }
+
         users[client_fd].setNickname(nickname);
         std::cout << "User set nickname: " << users[client_fd].getNickname() << std::endl;
         return true;
@@ -237,7 +255,10 @@ bool Server::handle_nick(int client_fd, const std::string& line)
 bool Server::handle_user(int client_fd, const std::string& line)
 {
     if (line.find("USER ") == 0){
-        std::string username = line.substr(5);
+        std::size_t start_pos = 5;
+        std::size_t space_pos = line.find(" ", start_pos);
+
+        std::string username = line.substr(start_pos, space_pos - start_pos);
         users[client_fd].setUsername(username);
         std::cout << "User set username: " << users[client_fd].getUsername() << std::endl;
         return true;
