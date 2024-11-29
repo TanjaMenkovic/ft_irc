@@ -34,6 +34,15 @@ irssi
 /topic (shows the current topic and who set it and when)
 /topic <topic you want to set>
 
+IRSSI FUNCTIONALITIES:
+
+- Connect to some available server
+/connect irc.freenode.net
+
+*********************
+*STARTING IRC SERVER*
+*********************
+./ircserver <port> <password>
 
 #MODE - CHANGE THE CHANNEL'S MODE
 
@@ -53,3 +62,64 @@ o = Give/take channel operator privilege
 /mode +o <user>
 /mode -o <user>
 
+*****************************
+*IRSSI COMMANDS             *    
+*(commands case insensitive)*
+*****************************
+
+#CONNECT
+/connect 127.0.0.1 <port> <password>
+
+#JOIN CHANNEL
+(if channel doesn't exist it creates a new one and creator becomes admin)
+/join <channelname>
+
+#MESSAGE
+/msg <user> <message>
+
+#KICK
+/kick <user>
+
+#INVITE
+/invite <user>
+
+#TOPIC
+/topic (shows the current topic and who set it and when)
+/topic <topic you want to set>
+
+
+#MODE - CHANGE THE CHANNEL'S MODE
+
+i = set/remove Invite-only channel
+/mode +i
+/mode -i
+
+t = Set/remove the restrictions of the TOPIC command to channel operators
+/mode +t
+/mode -t
+
+k = Set/remove the channel key (password)
+/mode +k <new password>
+/mode -k
+
+o = Give/take channel operator privilege
+/mode +o <user>
+/mode -o <user>
+
+
+*******************     QUESTIONS     *********************************************
+
+-Since user is supposed to be able to be connected on multiple channels, should the user class have a 
+vector of channels which will enable the change of nickname through all the channels the user is connected into?
+
+******************      NEXT       *************************************************
+
+-Server will most likely need a name for example the welcome message the client is expecting
+
+-Need to parse users information and save it somewhere
+
+-Figure out how to continue after client has connected with server
+
+-write code for the commands.
+
+-Rework the message I/O so that we are able to send messages bigger than the buffersize.
