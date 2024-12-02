@@ -79,9 +79,10 @@ int Server::create_socket() const {
 bool Server::bind_and_listen(int server_socket) const {
     struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
+
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(port);
+    server_addr.sin_addr.s_addr = INADDR_ANY;  // Listen on all available interfaces
+    server_addr.sin_port = htons(port);        // Set the port number
 
     if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         perror("Bind failed");
@@ -150,7 +151,6 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
 
-    std::string expected_ping = "[PING ft_irc\n]";
     int bytes_received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
     if (bytes_received <= 0) {
         std::cout << "Client disconnected or error occurred.\n";
@@ -158,7 +158,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
     }
 
     // Print the raw buffer to debug incoming data
-    std::cout << "Raw buffer received: [" << buffer << "]\n";
+    std::cout << "Raw buffer received: " << buffer << "\n";
 
     // Handle potential IRC line endings and command prefixes
     std::string client_data(buffer);
@@ -167,6 +167,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
     bool user = false;
 
     std::string line;
+    
     while (std::getline(ss, line)) {
         // Strip \r if it exists (for IRC compatibility)
         if (!line.empty() && line.back() == '\r') {
@@ -174,7 +175,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
         }
 
         // Print each cleaned line
-        std::cout << "Cleaned Line: [" << line << "]\n";
+        std::cout << "Cleaned Line: " << line << "\n";
 
         if (line.empty()) {
             continue;  // Skip empty lines
@@ -197,12 +198,11 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
         if (client_status[index].second && !client_status[index].first && nick && user) {
             send_welcome_message(client_fd, users[client_fd].getNickname()); // Replace with actual username
             client_status[index].first = true; // Mark welcome message as sent
-        } 
-        if (buffer == expected_ping) {
-            handle_ping_pong(client_fd, "ft_irc");
         }
-        else {
-            handle_client_message(line);
+
+        // Check for PING command and respond with PONG
+        if (client_data.find("PING ") == 0) {
+            handle_ping_pong(client_fd, client_data, "my_server_name");
         }
     }
 
@@ -252,12 +252,23 @@ bool Server::handle_user(int client_fd, const std::string& line)
     return false;
 }
 
-// Handle the PING PONG interaction with the client
-void Server::handle_ping_pong(int client_fd, const std::string &server_name) {
-    std::cout << "responding to the PING\n";
-    std::string pong_response = "PONG " + server_name + "\r\n";
-    send(client_fd, pong_response.c_str(), pong_response.length(), 0);
-    std::cout << "Sent PONG response: " << pong_response << "\n";
+// :tantalum.libera.chat PONG tantalum.libera.chat :tantalum.libera.chat
+
+void Server::handle_ping_pong(int client_fd, const std::string& line, const std::string& server_name) {
+    if (line.find("PING ") == 0) {
+        std::cout << "Responding to PING...\n";
+
+        // Extract the parameter after "PING "
+        std::string ping_param = line.substr(5);
+
+        // Construct a proper PONG response with the server name and parameter
+        std::string pong_response = ":" + server_name + " PONG " + server_name + " :" + ping_param + "\r\n";
+
+        // Send the response to the client
+        send(client_fd, pong_response.c_str(), pong_response.size(), 0);
+
+        std::cout << "Sent: " << pong_response;
+    }
 }
 
 // Helper function to send the IRC welcome message
