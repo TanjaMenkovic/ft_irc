@@ -207,9 +207,19 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
          if (client_data.find("JOIN ") == 0) {
             join(users[client_fd], "testing", this->channels);
         }
+        if (client_data.find("KICK ") == 0) {
+            handle_kick(users[client_fd], client_data);
+        }
     }
 
     return true;
+}
+
+//       Command: KICK
+//       Parameters: <channel> <user> [<comment>]
+
+void Server::handle_kick(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels) {
+
 }
 
 bool Server::isNicknameTaken(const std::string &nickname) const {

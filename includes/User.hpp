@@ -16,6 +16,7 @@ class User
         std::string nickname;
         std::string username;
         std::set<std::string> joined_channels;  // Set of channel names the user has joined
+        bool is_Operator;
 
     public:
         ~User();
