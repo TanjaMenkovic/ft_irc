@@ -204,6 +204,9 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
         if (client_data.find("PING ") == 0) {
             handle_ping_pong(client_fd, client_data, "my_server_name");
         }
+         if (client_data.find("JOIN ") == 0) {
+            join(users[client_fd], "testing", this->channels);
+        }
     }
 
     return true;
@@ -318,5 +321,20 @@ void Server::close_client(int client_fd, std::vector<pollfd>& fds, std::vector<s
     client_status.erase(client_status.begin() + index);
 }
 
+
+void Server::join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels) {
+    std::map<std::string, irc::Channel>::iterator found_channel = channels.find(channel_name);
+    // check whether channel exists
+    if (found_channel == channels.end()) {
+        // channel doesn't exist, so we create a new one
+        irc::Channel new_channel = irc::Channel(channel_name);
+        this->channels.insert({channel_name, new_channel});
+    } else {
+        // channel exists
+        found_channel->second.addUser(user);
+    }
+    // add to user joined channels
+    user.joinChannel(channel_name);
+}
 
 }

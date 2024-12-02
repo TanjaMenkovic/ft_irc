@@ -6,7 +6,7 @@
 
 class Channel;
 
-namespace ircz
+namespace irc
 {
 
 class User 

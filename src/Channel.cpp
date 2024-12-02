@@ -98,6 +98,8 @@ namespace irc
         this->topic_restricted_to_operators = restricted;
     }
 
+    
+
     // functions
     bool Channel::addUser(const User &user)
     {

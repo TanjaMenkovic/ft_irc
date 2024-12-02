@@ -44,6 +44,8 @@ class Server
         bool handle_nick(int client_fd, const std::string& line);
         bool handle_user(int client_fd, const std::string& line);
 
+        // Server Commands
+        void join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels);
     public:
         ~Server();
         Server();

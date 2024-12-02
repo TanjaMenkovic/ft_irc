@@ -46,6 +46,7 @@ class Channel
         void setTopicRestrictedToOperators(bool restricted);
 
         // functions
+        
         bool addUser(const User &user);
         bool removeUser(const User &user);
         bool hasUser(const User &user) const;
