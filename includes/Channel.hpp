@@ -4,6 +4,7 @@
 #include <iostream>
 #include <set>
 #include <map>
+#include <unordered_map>
 #include "User.hpp"
 
 namespace irc
@@ -16,8 +17,7 @@ class Channel
         std::string password;
         std::string name;
         std::map<std::string, User*> userptrs;
-        std::set<std::string> users;                // Set of users' nicknames in the channel
-        std::set<std::string> operators;            // Set of operators' nicknames (channel admins)
+        std::unordered_map<std::string, bool> users;           // Set of users' nicknames in the channel            // Set of operators' nicknames (channel admins)
         int user_limit;                             // Maximum number of users allowed in the channel (-1 for unlimited)
         bool invite_only;                           // Whether the channel is invite-only
         bool topic_restricted_to_operators;         // Whether changing the topic is restricted to operators only
@@ -30,8 +30,7 @@ class Channel
         Channel &operator=(const Channel &src);
 
         // Getters
-        const std::set<std::string>& getUsers() const;
-        const std::set<std::string>& getOperators() const;
+        const std::unordered_map<std::string, bool>& getUsers() const;
         const std::string& getName() const;
         const std::string& getTopic() const;
         const std::string& getPassword() const;
@@ -54,7 +53,6 @@ class Channel
         bool hasUser(const User &user) const;
         bool hasUserStr(const std::string &nickname) const;;         // added for kick command to find user from channel only with given string
         bool addOperator(const User &user);
-        bool removeOperator(const User &user);
         bool isOperator(const User &user) const;
         void broadcastMessage(const std::string &message, const User &sender) const;
 };

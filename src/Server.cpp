@@ -393,6 +393,7 @@ void Server::close_client(int client_fd, std::vector<pollfd>& fds, std::vector<s
 
 
 void Server::join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels) {
+    std::string client_message;
     std::map<std::string, irc::Channel>::iterator found_channel = channels.find(channel_name);
     // check whether channel exists
     if (found_channel == channels.end()) {

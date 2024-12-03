@@ -34,6 +34,9 @@ irssi
 /topic (shows the current topic and who set it and when)
 /topic <topic you want to set>
 
+#RAWLOG
+/RAWLOG SAVE <path to logfile location>
+
 IRSSI FUNCTIONALITIES:
 
 - Connect to some available server
@@ -111,6 +114,12 @@ o = Give/take channel operator privilege
 
 -Since user is supposed to be able to be connected on multiple channels, should the user class have a 
 vector of channels which will enable the change of nickname through all the channels the user is connected into?
+
+-Do we need to keep track of the channel where we are at the moment, since it seems that MODE is creating different
+type of errors for these  situations:
+    if channel doen't exist: No such channel
+    if we are not at correct channel: You're not on that channel
+    if not operator: You're not channel operator
 
 ******************      NEXT       *************************************************
 

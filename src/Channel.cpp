@@ -20,7 +20,6 @@ namespace irc
         if (this != &src)
         {
             this->users = src.getUsers();            
-            this->operators = src.getOperators();     
             this->topic = src.getTopic();             
             this->password = src.getPassword();  
             this->name = src.getName();
@@ -44,14 +43,9 @@ namespace irc
     }
 
     // Getters 
-    const std::set<std::string>& Channel::getUsers() const
+    const std::unordered_map<std::string, bool>& Channel::getUsers() const
     {
-        return this->users;
-    }
-
-    const std::set<std::string>& Channel::getOperators() const
-    {
-        return this->operators;
+        return (this->users);
     }
 
     const std::string& Channel::getTopic() const
@@ -123,7 +117,7 @@ namespace irc
             std::cout << " User is already in the channel!" << std::endl;
             return false;
         }
-        users.insert(user.getNickname());
+        users.insert({user.getNickname(), false});
         return true;
     }
     
@@ -137,42 +131,32 @@ namespace irc
         return true;
     }
     
-    bool Channel::hasUser(const User &user) const
-    {
-        return users.find(user.getNickname()) != users.end();
-    }
-    
     bool Channel::addOperator(const User &user)
     {
-        if (!hasUser(user)) {
-            return false;  // User must be part of the channel to be an operator
+        std::unordered_map<std::string, bool>::iterator found_user;
+        found_user = this->users.find(user.getNickname()); 
+        if (found_user == users.end()) {
+            std::cout << "add error message for user not in channel\n";
         }
-        operators.insert(user.getNickname());
-        return true;
-    }
-    
-    bool Channel::removeOperator(const User &user)
-    {
-        if (operators.find(user.getNickname()) == operators.end()) {
-            std::cout << "Operator is not in the channel!" << std::endl;
-            return false; 
-        }
-        operators.erase(user.getNickname());
+        // if in channel, make operator
+        found_user->second = true;
         return true;
     }
     
     // Check if a user is an operator in the channel
     bool Channel::isOperator(const User &user) const
     {
-        return operators.find(user.getNickname()) != operators.end();
+        std::unordered_map<std::string, bool>::const_iterator found_user;
+        found_user = this->users.find(user.getNickname());
+        return (found_user != users.end() && found_user->second == true ? true : false);
     }
 
     // Broadcast a message to all users in the channel
     void Channel::broadcastMessage(const std::string &message, const User &sender) const
     {
-        for (const std::string &user_nick : users) {
-            if (user_nick != sender.getNickname()) {
-                std::cout << "Sending message to: " << user_nick << " from " << sender.getNickname() << ": " << message <<  std::endl;
+        for (const std::pair<const std::string, bool> &user : users) {
+            if (user.first != sender.getNickname()) {
+                std::cout << "Sending message to: " << user.first << " from " << sender.getNickname() << ": " << message <<  std::endl;
             }
         }
     }
