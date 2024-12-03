@@ -238,6 +238,11 @@ void Server::handle_kick(User &user, const std::string client_data) {
     }
 
     auto channel_it = channels.find(channel_name);
+        // Print the key (channel name) and address of the Channel object
+    if (channel_it != channels.end()) {
+        std::cout << "Channel Name: " << channel_it->first << std::endl;
+        std::cout << "Channel Address: " << &channel_it->second << std::endl;
+}
     if (channel_it == channels.end()) {
         user.send_numeric_reply(ERR_NOSUCHCHANNEL, channel_name + " :No such channel", "ft_irc");
         return;
@@ -257,6 +262,7 @@ void Server::handle_kick(User &user, const std::string client_data) {
         return;
     }
     User *victim_ptr = channel.getUserByNickname(victim);
+    channel.removeUser(*victim_ptr);
     /*
     // Prepare the kick message with optional comment
     std::string kick_msg = ":" + user.getNickname() + " KICK " + channel_name + " " + victim;
