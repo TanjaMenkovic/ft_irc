@@ -34,6 +34,9 @@ irssi
 /topic (shows the current topic and who set it and when)
 /topic <topic you want to set>
 
+#RAWLOG
+/RAWLOG SAVE <path to logfile location>
+
 IRSSI FUNCTIONALITIES:
 
 - Connect to some available server
