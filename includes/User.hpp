@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <set>
+#include <sys/socket.h>
 
 class Channel;
 
@@ -36,6 +37,8 @@ class User
 
         void joinChannel(const std::string &channel_name);
         void leaveChannel(const std::string &channel_name);
+
+        void send_numeric_reply(int reply_code, const std::string &message, const std::string &server_name);
 };
 
 }
