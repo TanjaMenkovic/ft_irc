@@ -209,7 +209,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
             join(users[client_fd], "testing", this->channels);
         }
         if (client_data.find("KICK ") == 0) {
-            handle_kick(users[client_fd], )
+            handle_kick(users[client_fd], client_data);
         }
         // if (client_data.find("KICK ") == 0) {
         //     handle_kick(users[client_fd], client_data);
@@ -224,7 +224,19 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
 //       Check if the user about to kick someone is an operator
 //       Check if the user about to be kicked is part of the channel where kick command is used in
 //       
-void Server::handle_kick(User &user, const std::string victim, const std::string &channel_name, std::map<std::string, irc::Channel> &channels) {
+void Server::handle_kick(User &user, const std::string client_data) {
+    std::stringstream ss(client_data);
+    std::string command, channel_name, victim, comment;
+
+    // Parse the command (expecting format: KICK <channel> <victim> [:<optional comment>])
+    ss >> command >> channel_name >> victim;
+
+    // Extract optional comment (everything after the victim)
+    std::getline(ss, comment);
+    if (!comment.empty() && comment[0] == ':') {
+        comment = comment.substr(1); // Remove leading colon
+    }
+
     auto channel_it = channels.find(channel_name);
     if (channel_it == channels.end()) {
         user.send_numeric_reply(ERR_NOSUCHCHANNEL, channel_name + " :No such channel", "ft_irc");
