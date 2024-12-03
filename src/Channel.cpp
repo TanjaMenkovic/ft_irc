@@ -31,6 +31,18 @@ namespace irc
         return *this;
     }
 
+    User* Channel::getUserByNickname(const std::string &nickname) const {
+        auto it = userptrs.find(nickname);
+        if (it != userptrs.end()) {
+            return it->second;  // Return the User* if found
+        }
+        return nullptr;  // Return nullptr if not found
+    }
+
+    bool Channel::hasUserStr(const std::string &nickname) const {
+        return users.find(nickname) != users.end();
+    }
+
     // Getters 
     const std::set<std::string>& Channel::getUsers() const
     {

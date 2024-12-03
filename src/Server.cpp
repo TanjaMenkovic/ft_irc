@@ -236,18 +236,18 @@ void Server::handle_kick(User &user, const std::string victim, const std::string
     }
     // Check if user is an operator in the channel
     if (!channel.isOperator(user)) {
-        user.send_numeric_reply(ERR_CHANOPRIVSNEEDED, channel_name + " :You're not a channel operator");
+        user.send_numeric_reply(ERR_CHANOPRIVSNEEDED, channel_name + " :You're not a channel operator", "ft_irc");
         return;
     }
-
     // Check if target user is in the channel
-    if (!channel.hasUser(victim)) {
-        user.send_numeric_reply(ERR_NOTONCHANNEL, target_nick + " :They aren't on that channel");
+    if (!channel.hasUserStr(victim)) {
+        user.send_numeric_reply(ERR_NOTONCHANNEL, victim + " :They aren't on that channel", "ft_irc");
         return;
     }
-
+    User *victim_ptr = channel.getUserByNickname(victim);
+    /*
     // Prepare the kick message with optional comment
-    std::string kick_msg = ":" + user.getNickname() + " KICK " + channel_name + " " + target_nick;
+    std::string kick_msg = ":" + user.getNickname() + " KICK " + channel_name + " " + victim;
     if (!comment.empty()) {
         kick_msg += " :" + comment;
     }
@@ -255,15 +255,13 @@ void Server::handle_kick(User &user, const std::string victim, const std::string
 
     // Broadcast the kick message to all users in the channel
     channel.broadcast(kick_msg);
-
     // Remove the target user from the channel
-    channel.removeUser(target_nick);
+    channel.removeUser(*victim_ptr);
 
     // Optionally inform the kicked user separately (if needed)
-    User *target_user = get_user_by_nickname(target_nick);
-    if (target_user) {
-        send(target_user->getFd(), kick_msg.c_str(), kick_msg.size(), 0);
-    }
+    if (victim_ptr) {
+        send(victim_ptr->getFd(), kick_msg.c_str(), kick_msg.size(), 0);
+    }*/
 }
 
 bool Server::isNicknameTaken(const std::string &nickname) const {
