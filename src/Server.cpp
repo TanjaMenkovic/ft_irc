@@ -332,7 +332,7 @@ void Server::join(User &user, const std::string &channel_name, std::map<std::str
         this->channels.insert({channel_name, new_channel});
     } else {
         // channel exists
-        found_channel->second.addUser(user);
+        found_channel->second.addUser(user, false);
     }
     // add to user joined channels
     user.joinChannel(channel_name);
