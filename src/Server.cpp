@@ -1,4 +1,5 @@
 #include "../includes/Server.hpp"
+#include "../includes/User.hpp"
 #include "../includes/irc_replies.hpp"
 #include <cstring>    // For memset
 #include <unistd.h>   // For close()
@@ -209,7 +210,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
             join(users[client_fd], "testing", this->channels);
         }
         if (client_data.find("KICK ") == 0) {
-            handle_kick(users[client_fd], client_data);
+            kick(users[client_fd], client_data);
         }
         // if (client_data.find("KICK ") == 0) {
         //     handle_kick(users[client_fd], client_data);
@@ -223,8 +224,11 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
 //       Parameters: <channel> <user> [<comment>]
 //       Check if the user about to kick someone is an operator
 //       Check if the user about to be kicked is part of the channel where kick command is used in
-//       
-void Server::handle_kick(User &user, const std::string client_data) {
+// We need to find out is the victim part of the same channel as the operator,
+// so for this we need to use the channels map inside server.hpp to find the channel object, through that object
+// we can find if the victim is part of that channel. 
+// In order to remove the victim from the channel we have to then call the removeUser function inside Channel.hpp    
+void Server::kick(User &user, const std::string client_data) {
     std::stringstream ss(client_data);
     std::string command, channel_name, victim, comment;
 
@@ -261,25 +265,6 @@ void Server::handle_kick(User &user, const std::string client_data) {
         user.send_numeric_reply(ERR_NOTONCHANNEL, victim + " :They aren't on that channel", "ft_irc");
         return;
     }
-    User *victim_ptr = channel.getUserByNickname(victim);
-    channel.removeUser(*victim_ptr);
-    /*
-    // Prepare the kick message with optional comment
-    std::string kick_msg = ":" + user.getNickname() + " KICK " + channel_name + " " + victim;
-    if (!comment.empty()) {
-        kick_msg += " :" + comment;
-    }
-    kick_msg += "\r\n";
-
-    // Broadcast the kick message to all users in the channel
-    channel.broadcast(kick_msg);
-    // Remove the target user from the channel
-    channel.removeUser(*victim_ptr);
-
-    // Optionally inform the kicked user separately (if needed)
-    if (victim_ptr) {
-        send(victim_ptr->getFd(), kick_msg.c_str(), kick_msg.size(), 0);
-    }*/
 }
 
 bool Server::isNicknameTaken(const std::string &nickname) const {

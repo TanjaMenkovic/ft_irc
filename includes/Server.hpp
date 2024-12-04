@@ -43,10 +43,10 @@ class Server
         bool isNicknameTaken(const std::string &nickname) const;
         bool handle_nick(int client_fd, const std::string& line);
         bool handle_user(int client_fd, const std::string& line);
-        void handle_kick(User &user, const std::string client_data);
 
         // Server Commands
         void join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels);
+        void kick(User &user, const std::string client_data);
     public:
         ~Server();
         Server();

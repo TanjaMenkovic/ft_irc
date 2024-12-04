@@ -51,7 +51,7 @@ class Channel
         bool addUser(const User &user);
         bool removeUser(const User &user);
         bool hasUser(const User &user) const;
-        bool hasUserStr(const std::string &nickname) const;;         // added for kick command to find user from channel only with given string
+        bool hasUserStr(const std::string &nickname) const;        // added for kick command to find user from channel only with given string
         bool addOperator(const User &user);
         bool isOperator(const User &user) const;
         void broadcastMessage(const std::string &message, const User &sender) const;
