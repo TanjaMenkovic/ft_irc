@@ -160,11 +160,11 @@ namespace irc
     }
 
     // Broadcast a message to all users in the channel
-    void Channel::broadcastMessage(const User &_user, const std::string &message, std::map<int, irc::User> &_users) const
+    void Channel::broadcastMessage(const User &_user, const std::string &message, const std::map<int, irc::User> &_users) const
     {
         // find all users that are in channel execpt user.client_fd
         // and send message to clients
-        for (const std::pair<int, irc::User> &user: _users) {
+        for (const std::pair<const int, irc::User> &user: _users) {
             std::unordered_map<std::string, bool>::const_iterator found_user;
             // this->users contains all channel members, look for user in channel list
             found_user = this->users.find(user.second.getNickname());

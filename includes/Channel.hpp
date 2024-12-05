@@ -51,7 +51,7 @@ class Channel
         bool removeUser(const User &user);
         bool addOperator(const User &op_user, std::string &nick_to_promote, std::map<int, irc::User> &_users);
         bool isOperator(const User &user) const;
-        void broadcastMessage(const User &user, const std::string &message, std::map<int, irc::User> &users) const;
+        void broadcastMessage(const User &user, const std::string &message, const std::map<int, irc::User> &users) const;
 };
 
 }
