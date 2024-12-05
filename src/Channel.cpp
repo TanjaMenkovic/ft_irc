@@ -35,6 +35,17 @@ namespace irc
     {
         return (this->users);
     }
+    //std::unordered_map<std::string, bool> users;  
+    std::string Channel::getChannelNicks()
+    {
+        std::cout << "entered getChannelNicks\n";
+        std::string channelUsers = "empty";
+        for (const auto &[k, v]: this->users) {
+            std::cout << k << std::endl;
+        }
+        std::cout << channelUsers << std::endl;
+        return (channelUsers);
+    }
 
     const std::string& Channel::getTopic() const
     {
@@ -99,21 +110,25 @@ namespace irc
     {
         if (users.size() >= static_cast<size_t>(user_limit) && user_limit != -1) {
             std::string message = "User limit reached!\r\n";
-            send(user.getFd(), message.c_str(), message.length(), 0);
+            std::cout << message << std::endl;
+            // send(user.getFd(), message.c_str(), message.length(), 0);
             return false;
         }
         if (users.find(user.getNickname()) != users.end()) {
             std::string message = " User is already in the channel!\r\n";
-            send(user.getFd(), message.c_str(), message.length(), 0);
+            std::cout << message << std::endl;
+            // send(user.getFd(), message.c_str(), message.length(), 0);
             return false;
         }
         if (is_operator) {
             users.insert({user.getNickname(), true});
             std::string message = "added user " + user.getNickname() + " to channel: " + name + "\r\n";
-            send(user.getFd(), message.c_str(), message.length(), 0);
+            std::cout << message << std::endl;
+            // send(user.getFd(), message.c_str(), message.length(), 0);
         } else {
             std::string message = "added user as non-operator to channel\r\n";
-            send(user.getFd(), message.c_str(), message.length(), 0);
+            std::cout << message << std::endl;
+            // send(user.getFd(), message.c_str(), message.length(), 0);
             users.insert({user.getNickname(), false});
         }
         return true;

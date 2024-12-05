@@ -31,6 +31,7 @@ class Channel
 
         // Getters
         const std::unordered_map<std::string, bool>& getUsers() const;
+        std::string getChannelNicks();
         const std::string& getName() const;
         const std::string& getTopic() const;
         const std::string& getPassword() const;

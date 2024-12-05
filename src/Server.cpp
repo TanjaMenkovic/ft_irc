@@ -205,7 +205,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
             handle_ping_pong(client_fd, client_data, "my_server_name");
         }
          if (client_data.find("JOIN ") == 0) {
-            join(users[client_fd], "testing", this->channels);
+            join(users[client_fd], "#testing", this->channels);
         }
     }
 
@@ -321,21 +321,31 @@ void Server::close_client(int client_fd, std::vector<pollfd>& fds, std::vector<s
     client_status.erase(client_status.begin() + index);
 }
 
-
 void Server::join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels) {
-    std::string client_message;
+    std::cout << "In server join method!!!\n";
     std::map<std::string, irc::Channel>::iterator found_channel = channels.find(channel_name);
     // check whether channel exists
     if (found_channel == channels.end()) {
         // channel doesn't exist, so we create a new one
         irc::Channel new_channel = irc::Channel(channel_name);
         this->channels.insert({channel_name, new_channel});
+        new_channel.addUser(user, true);
+        std::cout << "channel nicks: " << new_channel.getUsers().begin()->first << std::endl;
     } else {
         // channel exists
         found_channel->second.addUser(user, false);
     }
     // add to user joined channels
     user.joinChannel(channel_name);
+    std::string message = "JOIN " + channel_name + "\r\n";
+    send(user.getFd(), message.c_str(), message.length(), 0);
+    irc::Channel joined_channel = this->channels.find(channel_name)->second;
+    if (joined_channel.getTopic() != "") {
+        message = "332 " + joined_channel.getTopic() + "\r\n";
+    }
+    joined_channel.getChannelNicks();
+    // message = "353 " + joined_channel.getChannelNicks() + "\r\n";
+    // send(user.getFd(), message.c_str(), message.length(), 0);
 }
 
 }
