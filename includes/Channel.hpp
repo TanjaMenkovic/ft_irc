@@ -27,10 +27,10 @@ class Channel
         Channel();
         Channel(const std::string &name);
         Channel(const Channel &copy);
-        Channel &operator=(Channel &src);
+        Channel &operator=(const Channel &src);
 
         // Getters
-        std::unordered_map<std::string, bool>& getUsers();
+        const std::unordered_map<std::string, bool>& getUsers() const;
         const std::string& getName() const;
         const std::string& getTopic() const;
         const std::string& getPassword() const;

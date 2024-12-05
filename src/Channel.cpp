@@ -15,7 +15,7 @@ namespace irc
         *this = copy;
     }
 
-    Channel &Channel::operator=(Channel &src)
+    Channel &Channel::operator=(const Channel &src)
     {
         if (this != &src)
         {
@@ -31,7 +31,7 @@ namespace irc
     }
 
     // Getters 
-    std::unordered_map<std::string, bool>& Channel::getUsers()
+    const std::unordered_map<std::string, bool>& Channel::getUsers() const
     {
         return (this->users);
     }
@@ -113,6 +113,7 @@ namespace irc
             send(user.getFd(), message.c_str(), message.length(), 0);
         } else {
             std::string message = "added user as non-operator to channel\r\n";
+            send(user.getFd(), message.c_str(), message.length(), 0);
             users.insert({user.getNickname(), false});
         }
         return true;
@@ -132,15 +133,19 @@ namespace irc
     bool Channel::addOperator(const User &op_user, std::string &nick_to_promote, std::map<int, irc::User> &_users)
     {
         std::unordered_map<std::string, bool>::const_iterator found_op;
-        found_op = this->getUsers().find(op_user.getNickname());
+        found_op = this->users.find(op_user.getNickname());
         // if operator user is found in channel users and is an operator
-        if (found_op != this->getUsers().end() && found_op->second == true) {
+        if (found_op != this->users.end() && found_op->second == true) {
             // check that user is part of channel
-            std::unordered_map<std::string, bool>::iterator found_nick = this->getUsers().find(nick_to_promote);
-            if (found_nick != this->getUsers().end()) {
+            std::unordered_map<std::string, bool>::iterator found_nick = this->users.find(nick_to_promote);
+            if (found_nick != this->users.end()) {
                 // broadcast message to all?
                 found_nick->second = true;
                 broadcastMessage(op_user, "user made operator message goes here!\r\n", _users);
+            } else {
+                // user not in channel
+                std::string message = "user not in channel!\r\n";
+                send(op_user.getFd(), message.c_str(), message.length(), 0);
             }
         }
         return true;
