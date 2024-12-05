@@ -2,6 +2,7 @@
 
 #include <string>
 #include <iostream>
+#include <sys/socket.h>
 #include <set>
 #include <map>
 #include <unordered_map>
@@ -46,11 +47,11 @@ class Channel
 
         // functions
         
-        bool addUser(const User &user);
+        bool addUser(const User &user, bool is_operator);
         bool removeUser(const User &user);
-        bool addOperator(const User &user);
+        bool addOperator(const User &op_user, std::string &nick_to_promote, std::map<int, irc::User> &_users);
         bool isOperator(const User &user) const;
-        void broadcastMessage(const std::string &message, const User &sender) const;
+        void broadcastMessage(const User &user, const std::string &message, std::map<int, irc::User> &users) const;
 };
 
 }
