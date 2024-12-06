@@ -47,6 +47,15 @@ namespace irc
     {
         return (this->users);
     }
+    //std::unordered_map<std::string, bool> users;  
+    std::string Channel::getChannelNicks()
+    {
+        std::string channelUsers = "";
+        for (const auto &[nickname, is_operator]: this->users) {
+            channelUsers += nickname + " "; 
+        }
+        return (channelUsers);
+    }
 
     const std::string& Channel::getTopic() const
     {
@@ -107,39 +116,63 @@ namespace irc
     
 
     // functions
-    bool Channel::addUser(const User &user)
+    bool Channel::addUser(const User &user, bool is_operator)
     {
         if (users.size() >= static_cast<size_t>(user_limit) && user_limit != -1) {
-            std::cout << "User limit reached!" << std::endl;
+            std::string message = "User limit reached!\r\n";
+            std::cout << message << std::endl;
+            // send(user.getFd(), message.c_str(), message.length(), 0);
             return false;
         }
         if (users.find(user.getNickname()) != users.end()) {
-            std::cout << " User is already in the channel!" << std::endl;
+            std::string message = " User is already in the channel!\r\n";
+            std::cout << message << std::endl;
+            // send(user.getFd(), message.c_str(), message.length(), 0);
             return false;
         }
-        users.insert({user.getNickname(), false});
+        if (is_operator) {
+            users.insert({user.getNickname(), true});
+            std::string message = "added user " + user.getNickname() + " to channel: " + name + "\r\n";
+            std::cout << message << std::endl;
+            // send(user.getFd(), message.c_str(), message.length(), 0);
+        } else {
+            std::string message = "added user as non-operator to channel\r\n";
+            std::cout << message << std::endl;
+            // send(user.getFd(), message.c_str(), message.length(), 0);
+            users.insert({user.getNickname(), false});
+        }
         return true;
     }
     
     bool Channel::removeUser(const User &user)
     {
         if (users.find(user.getNickname()) == users.end()) {
-            std::cout << "User is not in the channel!" << std::endl;
-            return false; 
+            std::string message = "User is not in channel!!\r\n";
+            send(user.getFd(), message.c_str(), message.length(), 0);
         }
         users.erase(user.getNickname());
         return true;
     }
     
-    bool Channel::addOperator(const User &user)
+    // std::unordered_map<std::string, bool> users; 
+    bool Channel::addOperator(const User &op_user, std::string &nick_to_promote, std::map<int, irc::User> &_users)
     {
-        std::unordered_map<std::string, bool>::iterator found_user;
-        found_user = this->users.find(user.getNickname()); 
-        if (found_user == users.end()) {
-            std::cout << "add error message for user not in channel\n";
+        std::unordered_map<std::string, bool>::const_iterator found_op;
+        found_op = this->users.find(op_user.getNickname());
+        // if operator user is found in channel users and is an operator
+        if (found_op != this->users.end() && found_op->second == true) {
+            // check that user is part of channel
+            std::unordered_map<std::string, bool>::iterator found_nick = this->users.find(nick_to_promote);
+            if (found_nick != this->users.end()) {
+                // broadcast message to all?
+                found_nick->second = true;
+                broadcastMessage(op_user, "user made operator message goes here!\r\n", _users);
+            } else {
+                // user not in channel
+                std::string message = "user not in channel!\r\n";
+                send(op_user.getFd(), message.c_str(), message.length(), 0);
+            }
         }
-        // if in channel, make operator
-        found_user->second = true;
         return true;
     }
     
@@ -152,14 +185,20 @@ namespace irc
     }
 
     // Broadcast a message to all users in the channel
-    void Channel::broadcastMessage(const std::string &message, const User &sender) const
+    void Channel::broadcastMessage(const User &_user, const std::string &message, const std::map<int, irc::User> &_users) const
     {
-        for (const std::pair<const std::string, bool> &user : users) {
-            if (user.first != sender.getNickname()) {
-                std::cout << "Sending message to: " << user.first << " from " << sender.getNickname() << ": " << message <<  std::endl;
+        // find all users that are in channel execpt user.client_fd
+        // and send message to clients
+        for (const std::pair<const int, irc::User> &user: _users) {
+            std::unordered_map<std::string, bool>::const_iterator found_user;
+            // this->users contains all channel members, look for user in channel list
+            found_user = this->users.find(user.second.getNickname());
+            // if user was found, send message to user
+            // need to add proper message syntax here
+             // now message not broadcast to _user, maybe change this
+            if (found_user != this->users.end() && user.second.getFd() != _user.getFd()) {
+                send(user.second.getFd(), message.c_str(), message.length(), 0);
             }
         }
     }
-
-
 }
