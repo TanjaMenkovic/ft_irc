@@ -217,21 +217,4 @@ void Server::close_client(int client_fd, std::vector<pollfd>& fds, size_t index)
     fds.erase(fds.begin() + index);
 }
 
-
-void Server::join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels) {
-    std::string client_message;
-    std::map<std::string, irc::Channel>::iterator found_channel = channels.find(channel_name);
-    // check whether channel exists
-    if (found_channel == channels.end()) {
-        // channel doesn't exist, so we create a new one
-        irc::Channel new_channel = irc::Channel(channel_name);
-        this->channels.insert({channel_name, new_channel});
-    } else {
-        // channel exists
-        found_channel->second.addUser(user);
-    }
-    // add to user joined channels
-    user.joinChannel(channel_name);
-}
-
 }

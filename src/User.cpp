@@ -21,7 +21,6 @@ namespace irc
         {
             this->nickname = src.getNickname();
             this->username = src.getUsername();
-            this->is_Operator = false;
             this->fd = src.getFd();
             this->joined_channels = src.getJoinedChannels();
         }

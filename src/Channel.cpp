@@ -38,10 +38,6 @@ namespace irc
         return nullptr;  // Return nullptr if not found
     }
 
-    bool Channel::hasUserStr(const std::string &nickname) const {
-        return users.find(nickname) != users.end();
-    }
-
     // Getters 
     const std::unordered_map<std::string, bool>& Channel::getUsers() const
     {
@@ -112,8 +108,6 @@ namespace irc
     {
         this->topic_restricted_to_operators = restricted;
     }
-
-    
 
     // functions
     bool Channel::addUser(const User &user, bool is_operator)
