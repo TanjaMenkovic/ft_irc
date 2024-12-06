@@ -5,6 +5,8 @@ namespace irc
 
 void Server::handle_mode(int client_fd, std::vector<std::string> tokens)
 {
+    (void) client_fd;
+    (void) tokens;
     // std::string input = line.substr(5);
     // std::istringstream iss(input);
     // std::vector<std::string> tokens;

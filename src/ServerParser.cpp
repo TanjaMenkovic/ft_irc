@@ -29,7 +29,9 @@ void Server::parse_commands(int client_fd, const std::string& line)
         {"TOPIC", 3},
         {"MODE", 4},
         {"JOIN", 5},
-        {"PRIVMSG", 6}
+        {"PRIVMSG", 6},
+        {"NICK", 7},
+        {"PING", 8}
     };
 
     auto it = commandMap.find(command_name);
@@ -49,9 +51,17 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 break;
             case 5:
                 std::cout << "Handle JOIN logic\n";
+                join(users[client_fd], tokens[0], this->channels);
                 break;
             case 6:
                 std::cout << "Handle PRIVMSG logic\n";
+                break;
+            case 7:
+                std::cout << "Handle NICK logic\n";
+                break;
+            case 8:
+                std::cout << "Handle PING logic\n";
+                handle_ping_pong(client_fd, tokens);
                 break;
             default:
                 std::cout << "Unknown command\n";

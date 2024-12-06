@@ -37,6 +37,27 @@ namespace irc
         return this->nickname;
     }
 
+    bool User::getNickReceived() const 
+    {
+        return this->nick_received;
+    }
+
+    bool User::getUserReceived() const
+    {
+        return this->user_received;
+
+    }
+
+    bool User::getPassReceived() const
+    {
+        return this->pass_received;
+    }
+
+    bool User::getAuthenticated() const
+    {
+        return this->authenticated;
+    }
+
     int User::getFd() const
     {
         return this->fd;
@@ -55,6 +76,26 @@ namespace irc
     void User::setUsername(const std::string &username)
     {
         this->username = username;
+    }
+
+    void User::setNickReceived()
+    {
+        this->nick_received = true;
+    }
+
+    void User::setUserReceived()
+    {
+        this->user_received = true;
+    }
+
+    void User::setPassReceived()
+    {
+        this->pass_received = true;
+    }
+
+    void User::setAsAuthenticated()
+    {
+        this->authenticated = true;
     }
 
     void User::joinChannel(const std::string &channel_name)
