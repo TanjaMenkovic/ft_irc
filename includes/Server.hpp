@@ -14,6 +14,8 @@
 #include <poll.h>
 #include <sstream>
 #include <map>
+#include <atomic>
+#include <csignal>
 
 #include "User.hpp"
 #include "Channel.hpp"

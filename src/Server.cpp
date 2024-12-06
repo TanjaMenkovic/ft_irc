@@ -7,6 +7,8 @@
 #include <iostream>   // For std::cout, std::cerr
 #include <poll.h>     // For pollfd
 
+std::atomic<bool> server_running(true);
+
 namespace irc {
 
 bool Server::validateClientPassword(const std::string &clientPassword) const {
@@ -39,7 +41,18 @@ std::string Server::getPassword() const {
     return this->password;
 }
 
+void signal_handler(int signal) {
+    if (signal == SIGINT || signal == SIGTERM) {
+        std::cout << "\nSignal " << signal << " received. Shutting down server...\n";
+        server_running = false; // Set flag to false for clean shutdown
+    }
+}
+
 int Server::setup_server() {
+    // Register the signal handler
+    std::signal(SIGINT, signal_handler);
+    std::signal(SIGTERM, signal_handler);
+
     int server_socket = create_socket();
     if (server_socket < 0) {
         return false;
@@ -54,12 +67,13 @@ int Server::setup_server() {
     std::vector<pollfd> fds = {{server_socket, POLLIN, 0}};
     std::vector<std::pair<int, bool>> client_status; // Track if client is authenticated
 
-    while (true) {
+    while (server_running) {
         if (!poll_connections(server_socket, fds, client_status)) {
             break;
         }
     }
 
+    std::cout << "Server shutting down...\n";
     close(server_socket);
     return true;
 }
@@ -229,6 +243,7 @@ bool Server::process_client_input(int client_fd, std::vector<std::pair<int, bool
 // we can find if the victim is part of that channel. 
 // In order to remove the victim from the channel we have to then call the removeUser function inside Channel.hpp    
 void Server::kick(User &user, const std::string client_data) {
+    (void)user;
     std::stringstream ss(client_data);
     std::string command, channel_name, victim, comment;
 
@@ -240,13 +255,13 @@ void Server::kick(User &user, const std::string client_data) {
     if (!comment.empty() && comment[0] == ':') {
         comment = comment.substr(1); // Remove leading colon
     }
-
+    /*
     auto channel_it = channels.find(channel_name);
         // Print the key (channel name) and address of the Channel object
     if (channel_it != channels.end()) {
         std::cout << "Channel Name: " << channel_it->first << std::endl;
         std::cout << "Channel Address: " << &channel_it->second << std::endl;
-}
+    }
     if (channel_it == channels.end()) {
         user.send_numeric_reply(ERR_NOSUCHCHANNEL, channel_name + " :No such channel", "ft_irc");
         return;
@@ -264,7 +279,7 @@ void Server::kick(User &user, const std::string client_data) {
     if (!channel.hasUserStr(victim)) {
         user.send_numeric_reply(ERR_NOTONCHANNEL, victim + " :They aren't on that channel", "ft_irc");
         return;
-    }
+    }*/
 }
 
 bool Server::isNicknameTaken(const std::string &nickname) const {
