@@ -114,6 +114,41 @@ bool Server::bind_and_listen(int server_socket) const {
     return true;
 }
 
+bool Server::poll_connections(int server_socket, std::vector<pollfd>& fds) {
+    while (server_running) {
+        int poll_count = poll(fds.data(), fds.size(), -1);
+
+        // Handle poll errors
+        if (poll_count < 0) {
+            if (errno == EINTR) {
+                // Poll interrupted by signal, check shutdown_requested
+                continue;
+            }
+            perror("Poll failed");
+            return false;
+        }
+
+        // Process ready file descriptors
+        for (size_t i = 0; i < fds.size(); ++i) {
+            if (fds[i].revents & POLLIN) {
+                if (fds[i].fd == server_socket) {
+                    accept_new_client(server_socket, fds);
+                } else {
+                    int client_fd = fds[i].fd;
+                    if (!process_client_input(client_fd)) {
+                        close_client(client_fd, fds, i);
+                        --i; // Adjust index as client is removed
+                    }
+                }
+            }
+        }
+    }
+
+    printf("Shutdown requested, exiting poll loop.\n");
+    return false;
+}
+
+/*
 // Helper function to handle polling and client connections
 bool Server::poll_connections(int server_socket, std::vector<pollfd>& fds) {
     int poll_count = poll(fds.data(), fds.size(), -1);
@@ -137,7 +172,7 @@ bool Server::poll_connections(int server_socket, std::vector<pollfd>& fds) {
     }
 
     return true;
-}
+}*/
 
 // Helper function to accept a new client
 void Server::accept_new_client(int server_socket, std::vector<pollfd>& fds) {
