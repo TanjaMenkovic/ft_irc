@@ -38,12 +38,10 @@ namespace irc
     //std::unordered_map<std::string, bool> users;  
     std::string Channel::getChannelNicks()
     {
-        std::cout << "entered getChannelNicks\n";
-        std::string channelUsers = "empty";
-        for (const auto &[k, v]: this->users) {
-            std::cout << k << std::endl;
+        std::string channelUsers = "";
+        for (const auto &[nickname, is_operator]: this->users) {
+            channelUsers += nickname + " "; 
         }
-        std::cout << channelUsers << std::endl;
         return (channelUsers);
     }
 
