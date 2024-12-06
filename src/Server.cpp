@@ -202,15 +202,6 @@ bool Server::process_client_input(int client_fd) {
     return true;
 }
 
-// Helper function to handle client messages after password validation
-// void Server::handle_client_message(const std::string& line) {
-//     if (line.find("CAP ") == 0) {
-//         std::cout << "Received capability command: " << line << std::endl;
-//     } else {
-//         std::cerr << "Unrecognized command: " << line << std::endl;
-//     }
-// }
-
 // Helper function to close a client connection
 void Server::close_client(int client_fd, std::vector<pollfd>& fds, size_t index) {
     close(client_fd);

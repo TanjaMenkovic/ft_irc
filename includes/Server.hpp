@@ -40,7 +40,6 @@ class Server
         bool process_client_input(int client_fd);
         void send_welcome_message(int client_fd, const std::string& nickname);
         void handle_ping_pong(int client_fd, const std::string& line, const std::string &server_name);
-        // void handle_client_message(const std::string& line);
         void close_client(int client_fd, std::vector<pollfd>& fds, size_t index);
 
         // ServerAuthentication.cpp
@@ -58,6 +57,9 @@ class Server
 
         // ServerPing.cpp
         void handle_ping_pong(int client_fd, std::vector<std::string> tokens);
+
+        // ServerNick.cpp
+        void change_nick(int client_fd, std::string new_nickname);
 
         // Server Commands
         void join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels);
