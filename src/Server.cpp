@@ -42,7 +42,7 @@ std::string Server::getPassword() const {
 }
 
 void signal_handler(int signal) {
-    if (signal == SIGINT || signal == SIGTERM) {
+    if (signal == SIGINT || signal == SIGTERM || signal == SIGQUIT) {
         std::cout << "\nSignal " << signal << " received. Shutting down server...\n";
         server_running = false; // Set flag to false for clean shutdown
     }
@@ -52,6 +52,7 @@ int Server::setup_server() {
     // Register the signal handler
     std::signal(SIGINT, signal_handler);
     std::signal(SIGTERM, signal_handler);
+    std::signal(SIGQUIT, signal_handler);
 
     int server_socket = create_socket();
     if (server_socket < 0) {
