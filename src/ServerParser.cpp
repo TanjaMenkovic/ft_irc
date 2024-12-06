@@ -58,6 +58,7 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 break;
             case 7:
                 std::cout << "Handle NICK logic\n";
+                change_nick(client_fd, tokens[0]);
                 break;
             case 8:
                 std::cout << "Handle PING logic\n";
