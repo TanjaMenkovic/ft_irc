@@ -31,7 +31,8 @@ void Server::parse_commands(int client_fd, const std::string& line)
         {"JOIN", 5},
         {"PRIVMSG", 6},
         {"NICK", 7},
-        {"PING", 8}
+        {"PING", 8},
+        {"QUIT", 9}
     };
 
     auto it = commandMap.find(command_name);
@@ -64,6 +65,9 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 std::cout << "Handle PING logic\n";
                 handle_ping_pong(client_fd, tokens);
                 break;
+            case 9:
+                std::cout << "Handle QUIT logic\n";
+                quit(users[client_fd], tokens[0], this->channels);
             default:
                 std::cout << "Unknown command\n";
                 break;
