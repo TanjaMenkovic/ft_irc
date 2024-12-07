@@ -3,39 +3,12 @@
 namespace irc 
 {
 
-/**
- * 	Syntax: NICK <nickname>
- * 
- * 	Nicknames are non-empty strings with the following restrictions:
- * 	
- * 	They MUST NOT contain any of the following characters: 
- * 	- space (' '), 
- * 	- comma (','), 
- * 	- asterisk ('*'), 
- * 	- question mark ('?'), 
- * 	- exclamation mark ('!'), 
- * 	- at sign ('@'),
- * 	- dot ('.').
- * 	
- * 	They MUST NOT start with any of the following characters: 
- * 	dollar ('$'), colon (':'), diese (#).
- * 	
- * 	Numeric Replies:
- * // // NICK
-// # define ERR_NONICKNAMEGIVEN(client) (":localhost 431 " + client + " :There is no nickname.\r\n")
-// # define ERR_ERRONEUSNICKNAME(client, nickname) (":localhost 432 " + client + " " + nickname + " :Erroneus nickname\r\n")
-// # define ERR_NICKNAMEINUSE(client, nickname) (":localhost 433 " + client + " " + nickname + " :Nickname is already in use.\r\n")
-// # define RPL_NICK(oclient, uclient, client) (":" + oclient + "!" + uclient + "@localhost NICK " +  client + "\r\n")
- * 
- * 	ERR_NONICKNAMEGIVEN (431)
- * 	ERR_ERRONEUSNICKNAME (432)
- * 	ERR_NICKNAMEINUSE (433)
- * 	ERR_NICKCOLLISION (436)
- * 
- * 	Example:
- * 	[CLIENT] /Nick mike
- * 
- */
+/*
+Syntax: NICK <nickname>
+- non-empty strings 
+- MUST NOT contain any of the following characters: ' ', ',', '*', '?', '!', '@', '.'
+- MUST NOT start with any of the following characters: '$', ':', '#'
+*/
 
 static bool	is_forbidden(char c)
 {
