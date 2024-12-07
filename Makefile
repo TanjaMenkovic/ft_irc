@@ -2,7 +2,7 @@ NAME = ircserv
 
 BUILD_FLAGS = -Wall -Wextra -std=c++17 -Werror
 
-SRC = src/main src/Server src/errors src/Channel src/User src/ServerParser src/ServerNick src/ServerAuthentication src/ServerMode src/ServerPing src/ServerJoin src/ServerQuit
+SRC = src/main src/Server src/errors src/Channel src/User src/ServerParser src/ServerNick src/ServerAuthentication src/ServerMode src/ServerPing src/ServerJoin src/ServerQuit src/ServerUtils
 
 H	= includes/irc includes/Server includes/Channel includes/User
 

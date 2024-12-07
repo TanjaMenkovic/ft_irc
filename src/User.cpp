@@ -108,6 +108,13 @@ namespace irc
         joined_channels.erase(channel_name);
     }
 
+    bool User::isInChannel(const std::string &channel_name)
+    {
+        if (joined_channels.find(channel_name) != joined_channels.end())
+            return true;
+        return false;
+    }
+
     void User::send_numeric_reply(int reply_code, const std::string &message, const std::string &server_name) {
         std::string formatted_reply = ":" + server_name + " " + std::to_string(reply_code) + " " + getNickname() + " :" + message + "\r\n";
         send(fd, formatted_reply.c_str(), formatted_reply.size(), 0);

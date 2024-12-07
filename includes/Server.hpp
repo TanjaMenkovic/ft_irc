@@ -19,6 +19,7 @@
 
 #include "User.hpp"
 #include "Channel.hpp"
+#include "irc_replies.hpp"
 
 
 namespace irc
@@ -60,6 +61,10 @@ class Server
 
         // ServerNick.cpp
         void change_nick(int client_fd, std::string new_nickname);
+
+        // ServerUtils.cpp
+        void send_to_joined_channels(int client_fd, std::string message);
+        void send_to_channel(int client_fd, std::string channel_name, std::string message);
 
         // Server Commands
         void join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels);

@@ -17,7 +17,9 @@ void Server::quit(User &user, const std::string reason, std::map<std::string, ir
             channel.removeUser(user); // Remove the user from the channel
 
             // Notify remaining users in the channel
-            channel.broadcastMessage(user, user_nickname + " has quit: " + reason, users);
+            //channel.broadcastMessage(user, user_nickname + " has quit: " + reason, users);
+            std::string message = user_nickname + " has quit: " + reason + "\r\n";
+            send_to_joined_channels(client_fd, message);
         }
     }
 

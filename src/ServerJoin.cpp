@@ -31,3 +31,27 @@ void Server::join(User &user, const std::string &channel_name, std::map<std::str
 }
 
 }
+
+/*
+- when we join a channel it is not written which user joined it in betwwen []
+
+- u shouldn't send User &user, send his fd and then find a user based on that, since all users are inside of Server class
+
+- implament this from irc_replies,hpp: (and if needed some more)
+
+// JOIN
+# define RPL_JOIN(user_id, channel) (user_id + " JOIN :#" +  channel + "\r\n")
+# define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + " #" + channel + " :Cannot join channel (+b)\r\n")
+# define ERR_BADCHANNELKEY(client, channel) ("475 " + client + " #" + channel + " :Cannot join channel (+k)\r\n")
+
+// PRIVMSG
+# define ERR_NOSUCHNICK(client, target) ("401 " + client + " " + target + " :No such nick/channel\r\n")
+# define ERR_NORECIPIENT(client) ("411 " + client + " :No recipient given PRIVMSG\r\n")
+# define ERR_NOTEXTTOSEND(client) ("412 " + client + " :No text to send\r\n")
+# define RPL_PRIVMSG(nick, username, target, message) (":" + nick + "!" + username + "@localhost PRIVMSG " + target + " " + message + "\r\n")
+
+// TOPIC
+# define RPL_TOPIC(client, channel, topic) (":localhost 332 " + client + " #" + channel + " " + topic + "\r\n")
+# define RPL_NOTOPIC(client, channel) (":localhost 331 " + client + " #" + channel + " :No topic is set\r\n")
+
+*/
