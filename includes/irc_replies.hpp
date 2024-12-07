@@ -87,7 +87,8 @@
 // # define RPL_PONG(user_id, token) (user_id + " PONG " + token + "\r\n")
 
 // // QUIT
-// # define RPL_QUIT(user_id, reason) (user_id + " QUIT :Quit: " + reason + "\r\n")
+// :tvalimak_!~tvalimak@freenode-l2g.s3h.4nuk5f.IP QUIT :Quit: leaving
+# define RPL_QUIT(username, nickname, reason) (":" + nickname + "!~" + username + "@ft_irc" + " QUIT :Quit: " + reason + "\r\n")
 // # define RPL_ERROR(user_id, reason) (user_id + " ERROR :" + reason + "\r\n")
 
 // // PRIVMSG
