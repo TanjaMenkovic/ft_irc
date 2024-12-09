@@ -67,7 +67,7 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 break;
             case 9:
                 std::cout << "Handle QUIT logic\n";
-                quit(users[client_fd], tokens[0], this->channels);
+                quit(client_fd, tokens[0], this->channels);
                 break;
             default:
                 std::cout << "Unknown command\n";

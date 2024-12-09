@@ -69,7 +69,7 @@ class Server
         // Server Commands
         void join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels);
         void kick(User &user, const std::string client_data);
-        void quit(User &user, const std::string reason, std::map<std::string, irc::Channel> &channels);
+        void quit(int client_fd, const std::string reason, std::map<std::string, irc::Channel> &channels);
     public:
         ~Server();
         Server();

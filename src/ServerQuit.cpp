@@ -3,10 +3,9 @@
 namespace irc 
 {
 
-void Server::quit(User &user, const std::string reason, std::map<std::string, irc::Channel> &channels) {
+void Server::quit(int client_fd, const std::string reason, std::map<std::string, irc::Channel> &channels) {
     std::string message;
-    int client_fd = user.getFd(); // Assuming User has a method to get its socket file descriptor
-    const std::string& user_nickname = user.getNickname(); // Get the user's nickname
+    const std::string& user_nickname = users[client_fd].getNickname(); // Get the user's nickname
 
     // Remove user from all channels
     for (std::map<std::string, irc::Channel>::iterator it = channels.begin(); it != channels.end(); ++it) {
@@ -15,10 +14,10 @@ void Server::quit(User &user, const std::string reason, std::map<std::string, ir
         // Check if the user is in the channel
         const auto& users_map = channel.getUsers();
         if (users_map.find(user_nickname) != users_map.end()) {
-            channel.removeUser(user); // Remove the user from the channel
+            channel.removeUser(client_fd); // Remove the user from the channel
 
             // Notify remaining users in the channel
-            message = RPL_QUIT(user.getUsername(), user.getNickname(), reason);
+            message = RPL_QUIT(users[client_fd].getUsername(), users[client_fd].getNickname(), reason);
             send_to_joined_channels(client_fd, message);
         }
     }
