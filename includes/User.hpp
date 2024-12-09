@@ -2,8 +2,28 @@
 
 #include <string>
 #include <iostream>
-#include <set>
+#include <map>
 #include <sys/socket.h>
+
+/*
+Class User containts:
+- important data for each user:
+    - fd - The file descriptor of the socket that represents the connection to the user
+    - nickname
+    - username
+    - joined_channels - map of channel names the user has joined and is the user operator of each channel
+- variables for authenticating the user when connecting to the server:
+    - authenticated - true if user received nickname, username and passward
+    - nick_received - did the user received the nickname when connected
+    - user_received - did the user received the username
+    - pass_received - did the user received the password
+- constructors and destructor
+- getters and setters
+- methods:
+    - joinChannel - method for adding a name of the channel into joined_channel set
+    - leaveChannel - method for erasing channel name from joined_channel set
+    - isInChannel - method for checking if channel name is inside od the set
+*/
 
 class Channel;
 
@@ -13,10 +33,10 @@ namespace irc
 class User 
 {
     private:
-        int fd; // The file descriptor of the socket that represents the connection to the user
+        int fd;
         std::string nickname;
         std::string username;
-        std::set<std::string> joined_channels;  // Set of channel names the user has joined
+        std::map<std::string, bool> joined_channels;
         bool authenticated = false;
         bool nick_received = false;
         bool user_received = false;
@@ -37,7 +57,7 @@ class User
         bool getPassReceived() const;
         bool getAuthenticated() const;
         int  getFd() const;
-        const std::set<std::string>& getJoinedChannels() const;
+        const std::map<std::string, bool>& getJoinedChannels() const;
 
         void setNickname(const std::string &nickname);
         void setUsername(const std::string &username);
@@ -46,12 +66,12 @@ class User
         void setPassReceived();
         void setAsAuthenticated();
 
-        void joinChannel(const std::string &channel_name);
+        void joinChannel(const std::string &channel_name, bool is_operator);
         void leaveChannel(const std::string &channel_name);
 
         bool isInChannel(const std::string &channel_name);
 
-        void send_numeric_reply(int reply_code, const std::string &message, const std::string &server_name);
+        // void send_numeric_reply(int reply_code, const std::string &message, const std::string &server_name);
 };
 
 }

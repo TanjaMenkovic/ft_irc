@@ -21,6 +21,23 @@
 #include "Channel.hpp"
 #include "irc_replies.hpp"
 
+/*
+Class Server contains:
+- important data for each server:
+    - port
+    - password
+- map of users that are currently in a Server (we can find each user based on the fd of the user)
+- map of channels that are currently in the Server (we can find each channel based on channel name)
+- constructors and destructor
+- getters and setters
+- helping methods that are private (explanation of each should be next to it's definiton) 
+- outside of server we can access only methods:
+    - setup_server - main function that is creating server and doing everything
+    - validateClientPassword - for validation is password correct when loging into server
+
+Class Server connects classes User and Channel and contains all users and channels that are in a server 
+and because of that in Server should be functions for manipulation of users and channels!
+*/
 
 namespace irc
 {
@@ -66,9 +83,12 @@ class Server
         void send_to_joined_channels(int client_fd, std::string message);
         void send_to_channel(int client_fd, std::string channel_name, std::string message);
 
+        // ServerUser.cpp
+        bool addUser(int client_fd, std::string channel_name);
+
         // Server Commands
         void join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels);
-        void kick(User &user, const std::string client_data);
+        // void kick(User &user, const std::string client_data);
         void quit(int client_fd, const std::string reason, std::map<std::string, irc::Channel> &channels);
     public:
         ~Server();

@@ -63,7 +63,7 @@ namespace irc
         return this->fd;
     }
     
-    const std::set<std::string>& User::getJoinedChannels() const
+    const std::map<std::string, bool>& User::getJoinedChannels() const
     {
         return this->joined_channels;
     }
@@ -98,9 +98,9 @@ namespace irc
         this->authenticated = true;
     }
 
-    void User::joinChannel(const std::string &channel_name)
+    void User::joinChannel(const std::string &channel_name, bool is_operator)
     {
-        joined_channels.insert(channel_name);
+        joined_channels[channel_name] = is_operator;
     }
 
     void User::leaveChannel(const std::string &channel_name)
@@ -115,9 +115,9 @@ namespace irc
         return false;
     }
 
-    void User::send_numeric_reply(int reply_code, const std::string &message, const std::string &server_name) {
-        std::string formatted_reply = ":" + server_name + " " + std::to_string(reply_code) + " " + getNickname() + " :" + message + "\r\n";
-        send(fd, formatted_reply.c_str(), formatted_reply.size(), 0);
-    }
+    // void User::send_numeric_reply(int reply_code, const std::string &message, const std::string &server_name) {
+    //     std::string formatted_reply = ":" + server_name + " " + std::to_string(reply_code) + " " + getNickname() + " :" + message + "\r\n";
+    //     send(fd, formatted_reply.c_str(), formatted_reply.size(), 0);
+    // }
 
 }

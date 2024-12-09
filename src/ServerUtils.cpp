@@ -15,7 +15,7 @@ void Server::send_to_joined_channels(int client_fd, std::string message)
     }
 }
 
-// send to everu user in a specific channel except client_fd
+// send to every user in a specific channel except client_fd
 void Server::send_to_channel(int client_fd, std::string channel_name, std::string message) {
     for (auto it : this->users) {
         if (it.first != client_fd && it.second.isInChannel(channel_name)) {
