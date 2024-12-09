@@ -3,31 +3,105 @@
 namespace irc 
 {
 
-void Server::join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels) {
-    // std::cout << "In server join method!!! \n";
-    // std::map<std::string, irc::Channel>::iterator found_channel = channels.find(channel_name);
-    // // check whether channel exists
-    // if (found_channel == channels.end()) {
-    //     // channel doesn't exist, so we create a new one
-    //     irc::Channel new_channel = irc::Channel(channel_name);
-    //     std::cout << new_channel.getName() << std::endl;
-    //     new_channel.addUser(user, true);
-    //     this->channels.insert({channel_name, new_channel});
-    //     // std::cout << "channel nicks: " << new_channel.getUsers().begin()->first << std::endl;
-    // } else {
-    //     // channel exists
-    //     found_channel->second.addUser(user, false);
-    // }
-    // // add to user joined channels
-    // user.joinChannel(channel_name);
-    // std::string message = "JOIN " + channel_name + "\r\n";
-    // send(user.getFd(), message.c_str(), message.length(), 0);
-    // irc::Channel& joined_channel = this->channels.find(channel_name)->second;
-    // if (joined_channel.getTopic() != "") {
-    //     message = "332 " + joined_channel.getTopic() + "\r\n";
-    // }
-    // // message = "353 " + joined_channel.getChannelNicks() + "\r\n";
-    // send(user.getFd(), message.c_str(), message.length(), 0);
+
+/*
+- check if channel exists in the map and if not, create a new channel in map and put user to be operator 
+- in users set add name of the channel
+
+when user join the channel he is gettting:
+>> :tmenkovi!~tmenkovi@194.136.126.52 JOIN #ahah123
+>> :copper.libera.chat 353 tmenkovi @ #ahah123 :@tmenkovi
+>> :copper.libera.chat 366 tmenkovi #ahah123 :End of /NAMES list.
+
+when user is joining the channel that exists and has a topic:
+>> :tmenkovi!~tmenkovi@freenode-l2g.s3h.4nuk5f.IP JOIN :#bla
+>> :*.freenode.net 332 tmenkovi #bla :shiiiiit  <- if topic exists it add this line also
+>> :*.freenode.net 333 tmenkovi #bla tanjaaa!~tmenkovi@freenode-l2g.s3h.4nuk5f.IP :1733757095 <- try without this line
+>> :*.freenode.net 353 tmenkovi = #bla :tmenkovi @tanjaaa CHECKED
+>> :*.freenode.net 366 tmenkovi #bla :End of /NAMES list. CHECKED
+
+# define RPL_JOIN(nickname, username, channel_name) (":" + nickname + "!~" + username + "@ft_irc JOIN #" + channel_name)
+// use getChannelNicks to get list_of_nicks
+# define RPL_NAMREPLY(nickname, channel_name, list_of_nicks) (":ft_irc 353 " + nickname + " = #" + channel_name + " :" + list_of_nicks + "\r\n")
+# define RPL_ENDOFNAMES(nickname, channel_name) (":ft_irc 366 " + nickname + " #" + channel_name + " :End of /NAMES list.\r\n")
+
+everyone else is getting only:
+>> :tmenkovi!~tmenkovi@194.136.126.52 JOIN #ahah123
+*/
+
+/*
+getting all nicknames from users in channel and putting them into one string separated with spaces,
+where there are first written regular users and then operators with '@' before their names
+*/
+std::string Server::getChannelNicks(std::string channel_name)
+{
+    std::string operators = "";
+    std::string regUsers = "";
+    std::string channelUsers = "";
+    for (auto &[fd, user]: this->users) {
+        if (user.isInChannel(channel_name)) {
+            user.isOperator(channel_name) ? operators += "@" + user.getNickname() + " " : regUsers += user.getNickname() + " ";
+        }
+    }
+    channelUsers += regUsers + operators;
+    return (channelUsers);
+}
+
+void Server::addUser(int client_fd, std::string channel_name)
+{
+    std::map<std::string, irc::Channel>::iterator found_channel = channels.find(channel_name);
+    std::string message;
+
+    if (found_channel == channels.end()) { // channel doesn't exist
+        irc::Channel new_channel = irc::Channel(channel_name);
+        channels[channel_name] = new_channel;
+        users[client_fd].joinChannel(channel_name, true);
+        message = RPL_JOIN(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name);
+        send_to_channel(channel_name, message);
+        message = RPL_NAMREPLY(users[client_fd].getNickname(), channel_name, getChannelNicks(channel_name));
+        message += RPL_ENDOFNAMES(users[client_fd].getNickname(), channel_name);
+        send_to_user(client_fd, message);
+    } else { // channel exists
+        if (users[client_fd].isInChannel(channel_name) == false) { // and user is not in the channel
+            users[client_fd].joinChannel(channel_name, false);
+            message = RPL_JOIN(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name);
+            send_to_channel(channel_name, message);
+            message = "";
+            if (channels[channel_name].getTopic() != "") {
+                message = RPL_TOPIC(users[client_fd].getNickname(), channel_name, channels[channel_name].getTopic());
+            }
+            message += RPL_NAMREPLY(users[client_fd].getNickname(), channel_name, getChannelNicks(channel_name));
+            message += RPL_ENDOFNAMES(users[client_fd].getNickname(), channel_name);
+            send_to_user(client_fd, message);
+        }
+    }
+            // if user is not in the channel add him
+    
+}
+
+void Server::join(int client_fd, std::string channel_name, std::string channel_pass) {
+    std::map<std::string, irc::Channel>::iterator found_channel = channels.find(channel_name);
+    std::string message;
+
+    if (found_channel != channels.end() && users[client_fd].isInChannel(channel_name) == false)
+    {
+        if (channels[channel_name].getPassword() != channel_pass) { // password is incorrect
+            message = ERR_BADCHANNELKEY(users[client_fd].getNickname(), channel_name);
+            send_to_user(client_fd, message);
+            return ;
+        }
+        if (channels[channel_name].getInviteOnly()) { // channel is invite only
+            message = ERR_INVITEONLYCHAN(users[client_fd].getNickname(), channel_name);
+            send_to_user(client_fd, message);
+            return ;
+        }
+        if (IsLimitReached(channel_name)) { // channel is full
+            message = ERR_CHANNELISFULL(users[client_fd].getNickname(), channel_name);
+            send_to_user(client_fd, message);
+            return ;
+        } 
+    }
+    addUser(client_fd, channel_name);
 }
 
 }

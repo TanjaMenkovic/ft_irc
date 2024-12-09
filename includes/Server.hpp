@@ -81,13 +81,17 @@ class Server
 
         // ServerUtils.cpp
         void send_to_joined_channels(int client_fd, std::string message);
-        void send_to_channel(int client_fd, std::string channel_name, std::string message);
+        void send_to_channel(std::string channel_name, std::string message);
+        void send_to_user(int client_fd, std::string message);
 
         // ServerUser.cpp
-        bool addUser(int client_fd, std::string channel_name);
+        bool IsLimitReached(const std::string &channel_name);
 
-        // Server Commands
-        void join(User &user, const std::string &channel_name, std::map<std::string, irc::Channel> &channels);
+        // ServerJoin.cpp
+        std::string getChannelNicks(std::string channel_name);
+        void addUser(int client_fd, std::string channel_name);
+        void join(int client_fd, std::string channel_name, std::string channel_pass);
+
         // void kick(User &user, const std::string client_data);
         void quit(int client_fd, const std::string reason, std::map<std::string, irc::Channel> &channels);
     public:

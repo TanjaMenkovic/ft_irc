@@ -70,6 +70,7 @@ class User
         void leaveChannel(const std::string &channel_name);
 
         bool isInChannel(const std::string &channel_name);
+        bool isOperator(const std::string &channel_name);
 
         // void send_numeric_reply(int reply_code, const std::string &message, const std::string &server_name);
 };

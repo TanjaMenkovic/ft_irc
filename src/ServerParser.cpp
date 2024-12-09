@@ -52,7 +52,10 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 break;
             case 5:
                 std::cout << "Handle JOIN logic\n";
-                join(users[client_fd], tokens[0], this->channels);
+                if (tokens.size() == 1) {
+                    tokens.push_back("");
+                }
+                join(client_fd, tokens[0], tokens[1]);
                 break;
             case 6:
                 std::cout << "Handle PRIVMSG logic\n";
@@ -67,7 +70,7 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 break;
             case 9:
                 std::cout << "Handle QUIT logic\n";
-                quit(client_fd, tokens[0], this->channels);
+                // quit(client_fd, tokens[0], this->channels);
                 break;
             default:
                 std::cout << "Unknown command\n";

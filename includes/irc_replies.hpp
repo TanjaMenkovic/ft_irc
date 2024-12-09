@@ -18,10 +18,13 @@
 // # define RPL_INVITING(user_id, client, nick, channel) (user_id + " 341 " + client + " " + nick + " #" + channel + "\r\n")
 // # define RPL_INVITE(user_id, invited, channel) (user_id + " INVITE " + invited + " #" + channel + "\r\n")
 
-// // JOIN
-// # define RPL_JOIN(user_id, channel) (user_id + " JOIN :#" +  channel + "\r\n")
+// JOIN
+// use getChannelNicks to get list_of_nicks
+# define RPL_NAMREPLY(nickname, channel_name, list_of_nicks) (":ft_irc 353 " + nickname + " = #" + channel_name + " :" + list_of_nicks + "\r\n")
+# define RPL_ENDOFNAMES(nickname, channel_name) (":ft_irc 366 " + nickname + " #" + channel_name + " :End of /NAMES list.\r\n")
+# define RPL_JOIN(nickname, username, channel_name) (":" + nickname + "!~" + username + "@ft_irc" + " JOIN :#" +  channel_name + "\r\n")
 // # define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + " #" + channel + " :Cannot join channel (+b)\r\n")
-// # define ERR_BADCHANNELKEY(client, channel) ("475 " + client + " #" + channel + " :Cannot join channel (+k)\r\n")
+# define ERR_BADCHANNELKEY(nickname, channel_name) (":ft_irc 475 " + nickname + " #" + channel_name + " :Cannot join channel (+k) - incorrect password\r\n")
 
 // // KICK
 // # define ERR_USERNOTINCHANNEL(client, nickname, channel) ("441 " + client + " " + nickname + " #" + channel + " :They aren't on that channel\r\n")
@@ -44,7 +47,9 @@
 // #define RPL_CHANNELMODEIS(client, channel, mode) (":ft_irc 324 " + client + " #" + channel + " " + mode + "\r\n")
 // #define RPL_CHANNELMODEISWITHKEY(client, channel, mode, password) (":ft_irc 324 " + client + " #" + channel + " " + mode + " " + password + "\r\n")
 // #define ERR_CANNOTSENDTOCHAN(client, channel) ("404 " + client + " #" + channel + " :Cannot send to channel\r\n")
-// #define ERR_CHANNELISFULL(client, channel) ("471 " + client + " #" + channel + " :Cannot join channel (+l)\r\n")
+# define ERR_CHANNELISFULL(nickname, channel_name) (":ft_irc 471 " + nickname + " #" + channel_name + " :Cannot join channel (+l) - channel is full, try again later\r\n")
+# define ERR_INVITEONLYCHAN(nickname, channel_name) (":ft_irc 473 " + nickname + " #" + channel_name + " :Cannot join channel (+i) - you must be invited\r\n")
+
 // #define ERR_CHANOPRIVSNEEDED(client, channel) (":ft_irc 482 " + client + " #" + channel + " :You're not channel operator\r\n")
 // #define ERR_INVALIDMODEPARAM(client, channel, mode, password) ("696 " + client + " #" + channel + " " + mode + " " + password + " : password must only contained alphabetic character\r\n")
 // // RPL_ERR a broadcoast quand user pas +v ou operator veut parler
@@ -58,11 +63,6 @@
 // #define RPL_MOTDSTART(client, servername) (":ft_irc 375 " + client + " :- " + servername + " Message of the day - \r\n")
 // #define RPL_MOTD(client, motd_line) (":ft_irc 372 " + client + " :" + motd_line + "\r\n")
 // #define RPL_ENDOFMOTD(client) (":ft_irc 376 " + client + " :End of /MOTD command.\r\n")
-
-
-// // NAMES
-// # define RPL_NAMREPLY(client, symbol, channel, list_of_nicks) (":ft_irc 353 " + client + " " + symbol + " #" + channel + " :" + list_of_nicks + "\r\n")
-// # define RPL_ENDOFNAMES(client, channel) (":ft_irc 366 " + client + " #" + channel + " :End of /NAMES list.\r\n")
 
 // // NICK
 # define ERR_NONICKNAMEGIVEN(nickname) (":ft_irc 431 " + nickname + " :There is no nickname.\r\n")
@@ -97,8 +97,8 @@
 // # define ERR_NOTEXTTOSEND(client) ("412 " + client + " :No text to send\r\n")
 // # define RPL_PRIVMSG(nick, username, target, message) (":" + nick + "!" + username + "@ft_irc PRIVMSG " + target + " " + message + "\r\n")
 
-// // TOPIC
-// # define RPL_TOPIC(client, channel, topic) (":ft_irc 332 " + client + " #" + channel + " " + topic + "\r\n")
+// TOPIC
+# define RPL_TOPIC(nickname, channel_name, topic) (":ft_irc 332 " + nickname + " #" + channel_name + " " + topic + "\r\n")
 // # define RPL_NOTOPIC(client, channel) (":ft_irc 331 " + client + " #" + channel + " :No topic is set\r\n")
 
 // // USER
