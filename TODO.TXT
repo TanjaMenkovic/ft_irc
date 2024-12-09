@@ -109,6 +109,17 @@ o = Give/take channel operator privilege
 /mode +o <user>
 /mode -o <user>
 
+*******************   TESTS IN IRSSI   *********************************************
+
+- When user connects to server in irssi, creates a channel and then other users join that
+  channel, users already on that channel receiva message in format:
+
+  user [~user@freenode-l2g.s3h.4nuk5f.IP] has joined #channel1
+
+- If you are part of an channel and you try to join to the same channel again, the client
+  will only switch to the window that is on the channel if youre not already viewing that
+  window.
+
 
 *******************     QUESTIONS     *********************************************
 
