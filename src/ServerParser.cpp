@@ -62,7 +62,11 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 join(client_fd, tokens[0], tokens[1]);
                 break;
             case 6:
-                std::cout << "Handle PRIVMSG logic\n";
+                if (tokens.size() < 2) {
+                    std::cerr << "Error: too few arguments for privmessage!\n";
+                    return ;
+                }
+                privmsg(client_fd, tokens);
                 break;
             case 7:
                 std::cout << "Handle NICK logic\n";
