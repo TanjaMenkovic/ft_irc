@@ -4,25 +4,21 @@ namespace irc
 {
 
 void Server::quit(int client_fd, const std::string& reason) {
-    const std::string& user_nickname = users[client_fd].getNickname(); // Get the user's nickname
 
     // Construct the quit message
-    std::string message = ":" + user_nickname + " QUIT :" + reason + "\r\n";
+    std::string message = RPL_QUIT(users[client_fd].getUsername(), users[client_fd].getNickname(), reason);
 
     // Get the list of channels the user is part of
     std::map<std::string, bool> joined_channels = users[client_fd].getJoinedChannels();
 
     // Iterate through the joined channels
-    for (const auto& [channel_name, is_member] : joined_channels) {
-        std::cout << channel_name << is_member << "\n";
-        if (is_member) { // Check if the user is a member of the channel
-            // Broadcast the quit message to the channel
+    for (const auto& [channel_name, is_operator] : joined_channels) {
+        std::cout << channel_name << is_operator << "\n";
             if (channels.find(channel_name) != channels.end()) {
                 send_to_channel(channel_name, message);
             }
             // Call leaveChannel for the channel
             users[client_fd].leaveChannel(channel_name);
-        }
     }
     // Remove the user from the server
     users.erase(client_fd);
