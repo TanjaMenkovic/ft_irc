@@ -3,42 +3,27 @@
 namespace irc 
 {
 
-// quit function has to go through all channels that the quitting user is part of, print a quit message to the channel
-// and then remove that user from that channel before he quits the server.
-
-void Server::quit(int client_fd, const std::string& reason)
-{
-    std::string message;
+void Server::quit(int client_fd, const std::string& reason) {
     const std::string& user_nickname = users[client_fd].getNickname(); // Get the user's nickname
 
-    // Map to store channels the user is part of
-    std::map<std::string, irc::Channel*> user_channels;
+    // Construct the quit message
+    std::string message = ":" + user_nickname + " QUIT :" + reason + "\r\n";
 
-    // Iterate through all channels
-    for (std::map<std::string, irc::Channel>::iterator it = channels.begin(); it != channels.end(); ++it) {
-        irc::Channel& channel = it->second;
+    // Get the list of channels the user is part of
+    std::map<std::string, bool> joined_channels = users[client_fd].getJoinedChannels();
 
-        // Assuming getChannelNicks returns a map or a list of nicknames in the channel
-        const auto& nicknames = getChannelNicks(channel.getName());
-
-        // Check if the user's nickname exists in the channel
-        if (nicknames.find(user_nickname) != nicknames.end()) {
-            user_channels[it->first] = &channel; // Add to the map
+    // Iterate through the joined channels
+    for (const auto& [channel_name, is_member] : joined_channels) {
+        std::cout << channel_name << is_member << "\n";
+        if (is_member) { // Check if the user is a member of the channel
+            // Broadcast the quit message to the channel
+            if (channels.find(channel_name) != channels.end()) {
+                send_to_channel(channel_name, message);
+            }
+            // Call leaveChannel for the channel
+            users[client_fd].leaveChannel(channel_name);
         }
     }
-
-    // Remove the user from all channels they were part of
-    for (std::map<std::string, irc::Channel*>::iterator it = user_channels.begin(); it != user_channels.end(); ++it) {
-        irc::Channel* channel = it->second;
-        channel->removeUser(client_fd); // Assuming removeUser is a function that removes a user by client_fd
-    }
-
-    // Construct the quit message
-    message = ":" + user_nickname + " QUIT :" + reason + "\r\n";
-
-    // Send the quit message to all users (assuming broadcastMessage exists)
-    broadcastMessage(message);
-
     // Remove the user from the server
     users.erase(client_fd);
 }
@@ -71,4 +56,4 @@ void Server::quit(int client_fd, const std::string reason, std::map<std::string,
     users.erase(client_fd);
 }*/
 
-} // namespace irc
+ // namespace irc

@@ -24,11 +24,4 @@ bool Server::IsLimitReached(const std::string &channel_name) {
     return limit < number_of_users ? false : true;
 }
 
-/*
-    Create a map of channels that user is in.
-*/
-map Server::getUsers<> {
-
-}
-
 }

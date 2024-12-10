@@ -92,8 +92,8 @@ class Server
         void addUser(int client_fd, std::string channel_name);
         void join(int client_fd, std::string channel_name, std::string channel_pass);
 
-        // void kick(User &user, const std::string client_data);
-        void quit(int client_fd, const std::string reason, std::map<std::string, irc::Channel> &channels);
+        // ServerQuit.cpp
+        void quit(int client_fd, const std::string& reason);
     public:
         ~Server();
         Server();
