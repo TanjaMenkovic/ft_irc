@@ -99,6 +99,7 @@ class Server
 
         // ServerQuit.cpp
         void quit(int client_fd, const std::string& reason);
+        void is_channel_empty(std::string channel_name);
     public:
         ~Server();
         Server();
