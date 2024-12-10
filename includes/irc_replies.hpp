@@ -20,16 +20,17 @@
 
 // JOIN
 // use getChannelNicks to get list_of_nicks
-# define RPL_NAMREPLY(nickname, channel_name, list_of_nicks) (":ft_irc 353 " + nickname + " = #" + channel_name + " :" + list_of_nicks + "\r\n")
-# define RPL_ENDOFNAMES(nickname, channel_name) (":ft_irc 366 " + nickname + " #" + channel_name + " :End of /NAMES list.\r\n")
-# define RPL_JOIN(nickname, username, channel_name) (":" + nickname + "!~" + username + "@ft_irc" + " JOIN :#" +  channel_name + "\r\n")
+# define RPL_NAMREPLY(nickname, channel_name, list_of_nicks) (":ft_irc 353 " + nickname + " = " + channel_name + " :" + list_of_nicks + "\r\n")
+# define RPL_ENDOFNAMES(nickname, channel_name) (":ft_irc 366 " + nickname + " " + channel_name + " :End of /NAMES list.\r\n")
+# define RPL_JOIN(nickname, username, channel_name) (":" + nickname + "!~" + username + "@ft_irc" + " JOIN :" +  channel_name + "\r\n")
 // # define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + " #" + channel + " :Cannot join channel (+b)\r\n")
 # define ERR_BADCHANNELKEY(nickname, channel_name) (":ft_irc 475 " + nickname + " #" + channel_name + " :Cannot join channel (+k) - incorrect password\r\n")
 
 // // KICK
 // # define ERR_USERNOTINCHANNEL(client, nickname, channel) ("441 " + client + " " + nickname + " #" + channel + " :They aren't on that channel\r\n")
 # define ERR_CHANOPRIVSNEEDED(nickname, channel_name) (":ft_irc 482 " + nickname + " #" +  channel_name + " :You're not channel operator\r\n")
-// # define RPL_KICK(user_id, channel, kicked, reason) (user_id + " KICK #" + channel + " " + kicked + " " + reason + "\r\n")
+# define RPL_KICK(channel_name, kicked, reason) (":ft_irc KICK " + channel_name + " " + kicked + " " + reason + "\r\n")
+//>> :ohertzbe!~ohertzbe@194.136.126.51 KICK #hah5 idiot :such an idiot
 
 // // KILL
 // # define ERR_NOPRIVILEGES(client) ("481 " + client + " :Permission Denied- You're not an IRC operator\r\n")

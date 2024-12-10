@@ -39,6 +39,10 @@ void Server::parse_commands(int client_fd, const std::string& line)
     if (it != commandMap.end()) {
         switch (it->second) {
             case 1:
+                if (tokens.size() < 2) {
+                    std::cerr << "Error: too few arguments for kick!\n";
+                    return ;
+                }
                 kick(client_fd, tokens);
                 break;
             case 2:
