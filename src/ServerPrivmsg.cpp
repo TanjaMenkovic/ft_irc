@@ -2,17 +2,6 @@
 
 namespace irc 
 {
-    // receiving privatemessage:
-    // >> :ohertzbe_!~ohertzbe@194.136.126.51 PRIVMSG ohertzbe :hello idiot
-    // sending privmessages:
-    // << PRIVMSG #chan21 :testing haahhahaahahahah
-    // << PRIVMSG ohertzbe :hello idiot
-    // error no such nick/channel
-    //>> :zirconium.libera.chat 401 ohertzbe asdsad :No such nick/channel
-
-
-    //# define RPL_PRIVMSG(nick, username, target, message) (":" + nick + "!" + "~" + username + "@ft_irc PRIVMSG " + target + " " + message + "\r\n")
-
     void    Server::send_privmsg(int client_fd, const std::string& receiver, const std::string& privmessage) {
         std::string message;
         message = RPL_PRIVMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), receiver, privmessage);
