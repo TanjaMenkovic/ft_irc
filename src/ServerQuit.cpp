@@ -28,8 +28,8 @@ void Server::quit(int client_fd, const std::string& reason) {
     users.erase(client_fd);
 }
 
-// Make a function that iterates through all users and checks if any user is part of an given channel.
-// If no user is found to be part of the given channel, the channel will be removed
+// Function that iterates through all users and checks if any user is part of an given channel.
+// If no user is found to be part of the given channel, the channel will be removed.
 void Server::is_channel_empty(std::string channel_name) {
     for (auto it : this->users) {
         if (it.second.isInChannel(channel_name)) {

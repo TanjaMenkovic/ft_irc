@@ -79,6 +79,9 @@ class Server
         void kick_user(const std::string& channel_name, const std::string& reason, const std::string& user_to_kick);
         void kick(int client_fd, std::vector<std::string> tokens);
 
+        // ServerTopic.cpp
+        void topic(int client_fd, std::vector<std::string> tokens);
+
         // ServerMode.cpp
         void handle_mode(int client_fd, std::vector<std::string> tokens);
 
@@ -105,6 +108,7 @@ class Server
         // ServerQuit.cpp
         void quit(int client_fd, const std::string& reason);
         void is_channel_empty(std::string channel_name);
+
     public:
         ~Server();
         Server();
