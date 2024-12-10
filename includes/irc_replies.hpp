@@ -93,10 +93,11 @@
 // # define RPL_ERROR(user_id, reason) (user_id + " ERROR :" + reason + "\r\n")
 
 // // PRIVMSG
+//>> :zirconium.libera.chat 401 ohertzbe asdsad :No such nick/channel
 # define ERR_NOSUCHNICK(nickname, target) (":ft_irc 401 " + nickname + " " + target + " :No such nick/channel\r\n")
 // # define ERR_NORECIPIENT(client) ("411 " + client + " :No recipient given PRIVMSG\r\n")
 // # define ERR_NOTEXTTOSEND(client) ("412 " + client + " :No text to send\r\n")
-// # define RPL_PRIVMSG(nick, username, target, message) (":" + nick + "!" + username + "@ft_irc PRIVMSG " + target + " " + message + "\r\n")
+# define RPL_PRIVMSG(nick, username, target, message) (":" + nick + "!" + "~" + username + "@ft_irc PRIVMSG " + target + " " + message + "\r\n")
 
 // TOPIC
 # define RPL_TOPIC(nickname, channel_name, topic) (":ft_irc 332 " + nickname + " #" + channel_name + " " + topic + "\r\n")

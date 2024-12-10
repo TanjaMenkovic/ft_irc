@@ -71,6 +71,10 @@ class Server
         void parse_commands(int client_fd, const std::string& line);
 
 
+        // ServerPrivmsg.cpp
+        void privmsg(int client_fd, std::vector<std::string> tokens);
+        void send_privmsg(int client_fd, const std::string& receiver, const std::string& privmessage);
+
         // ServerKick.cpp
         void kick_user(const std::string& channel_name, const std::string& reason, const std::string& user_to_kick);
         void kick(int client_fd, std::vector<std::string> tokens);
@@ -87,6 +91,7 @@ class Server
         // ServerUtils.cpp
         void send_to_joined_channels(int client_fd, std::string message);
         void send_to_channel(std::string channel_name, std::string message);
+        void send_to_channel_not_fd(int fd, std::string channel_name, std::string message);
         void send_to_user(int client_fd, std::string message);
 
         // ServerUser.cpp
