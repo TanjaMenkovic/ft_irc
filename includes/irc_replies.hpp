@@ -28,7 +28,7 @@
 
 // // KICK
 // # define ERR_USERNOTINCHANNEL(client, nickname, channel) ("441 " + client + " " + nickname + " #" + channel + " :They aren't on that channel\r\n")
-// // # define ERR_CHANOPRIVSNEEDED(client, channel) ("482 " + client + " #" +  channel + " :You're not channel operator\r\n")
+# define ERR_CHANOPRIVSNEEDED(nickname, channel_name) (":ft_irc 482 " + nickname + " #" +  channel_name + " :You're not channel operator\r\n")
 // # define RPL_KICK(user_id, channel, kicked, reason) (user_id + " KICK #" + channel + " " + kicked + " " + reason + "\r\n")
 
 // // KILL
@@ -92,7 +92,7 @@
 // # define RPL_ERROR(user_id, reason) (user_id + " ERROR :" + reason + "\r\n")
 
 // // PRIVMSG
-// # define ERR_NOSUCHNICK(client, target) ("401 " + client + " " + target + " :No such nick/channel\r\n")
+# define ERR_NOSUCHNICK(nickname, target) (":ft_irc 401 " + nickname + " " + target + " :No such nick/channel\r\n")
 // # define ERR_NORECIPIENT(client) ("411 " + client + " :No recipient given PRIVMSG\r\n")
 // # define ERR_NOTEXTTOSEND(client) ("412 " + client + " :No text to send\r\n")
 // # define RPL_PRIVMSG(nick, username, target, message) (":" + nick + "!" + username + "@ft_irc PRIVMSG " + target + " " + message + "\r\n")

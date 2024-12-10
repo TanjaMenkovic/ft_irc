@@ -70,6 +70,10 @@ class Server
         // ServerParser.cpp
         void parse_commands(int client_fd, const std::string& line);
 
+
+        // ServerKick.cpp
+        void kick(int client_fd, std::vector<std::string> tokens);
+
         // ServerMode.cpp
         void handle_mode(int client_fd, std::vector<std::string> tokens);
 
