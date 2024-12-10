@@ -19,7 +19,7 @@ void Server::parse_commands(int client_fd, const std::string& line)
     }
     
     if (tokens.empty()) {
-        std::cerr << "Error: No channel name provided in MODE command.\n";
+        std::cerr << "Error: No channel name provided in command.\n";
         return ;
     } 
 
@@ -39,7 +39,11 @@ void Server::parse_commands(int client_fd, const std::string& line)
     if (it != commandMap.end()) {
         switch (it->second) {
             case 1:
-                std::cout << "Handle KICK logic\n";
+                if (tokens.size() < 2) {
+                    std::cerr << "Error: too few arguments for kick!\n";
+                    return ;
+                }
+                kick(client_fd, tokens);
                 break;
             case 2:
                 std::cout << "Handle INVITE logic\n";
