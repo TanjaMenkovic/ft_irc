@@ -15,7 +15,7 @@ namespace irc
 
            ERR_NEEDMOREPARAMS              ERR_NOTONCHANNEL
            RPL_NOTOPIC                     RPL_TOPIC
-           ERR_CHANOPRIVSNEEDED
+           ERR_CHANOPRIVSNEEDED            ERR_NOSUCHCHANNEL
 */
 
 // If client uses the topic command while connected to an server but it hasnt joined any channels, the command needs to be provided
@@ -47,7 +47,24 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
 	std::string message;
 
     std::cout << "inside topic command with user " << users[client_fd].getNickname() << "\n";
-    // first if-else block in case channel name param is provided
+
+    // first if is to check if the command is provided with channelname but no other params, in this case we just want to return the topic
+    // of the given channel
+    if (tokens[0].at(0) == '#' && tokens.size() == 1) {
+        // add check to see if channel exist
+        if (channels.find(tokens[0]) != channels.end()) {
+            // get the topic of the channel
+            message = channels[tokens[0]].getTopic();
+            if (message.empty()) {
+                message = ERR_NOSUCHCHANNEL(users[client_fd].getNickname(), tokens[0]);
+                send_to_user(client_fd, message);
+                return ;
+                }
+            send_to_user(client_fd, message);
+            }
+        }
+
+    // second if-else block in case channel name param is provided
 	// first add check that if channel name is given and if the channel exists and is user on that channel
     if (tokens[0].at(0) == '#') {
         if (!users[client_fd].isInChannel(tokens[0])) {
@@ -58,6 +75,8 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
         if (channels[tokens[0]].getTopicRestricted()) {
             if (!users[client_fd].isOperator(tokens[0])) {
                 message = ERR_CHANOPRIVSNEEDED(users[client_fd].getNickname(), tokens[0]);
+                send_to_user(client_fd, message);
+        	    return ;
             }
         }
     }
