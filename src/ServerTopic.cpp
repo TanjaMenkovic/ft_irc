@@ -46,6 +46,7 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
 	std::string topic;
 	std::string message;
 
+    std::cout << "inside topic command with user " << users[client_fd].getNickname() << "\n";
 	// first add check that if channel name is given and if the user is operator on a given channel
     if (tokens[0].at(0) == '#') {
         if (!users[client_fd].isInChannel(tokens[0])) {
