@@ -83,6 +83,12 @@ namespace irc
         return this->topic_restricted_to_operators;
     }
 
+    std::vector<int> Channel::getInvitedUsers() const
+    {
+        return (this->invited_users);
+    }
+    
+
     // Setters 
     void Channel::setTopic(const std::string& newTopic)
     {
@@ -107,6 +113,21 @@ namespace irc
     void Channel::setTopicRestrictedToOperators(bool restricted)
     {
         this->topic_restricted_to_operators = restricted;
+    }
+
+    void Channel::addInvitedUser(const int& client_fd) 
+    {
+        if (find(invited_users.begin(), invited_users.end(), client_fd) == invited_users.end()) {
+            this->invited_users.push_back(client_fd);
+        }
+    }
+
+    void Channel::removeInvitedUser(const int& client_fd)
+    {
+        std::vector<int>::iterator it = find(invited_users.begin(), invited_users.end(), client_fd);
+        if (it != invited_users.end()) {
+            invited_users.erase(it);
+        }
     }
 
     // functions

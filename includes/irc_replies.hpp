@@ -11,11 +11,11 @@
 // # define ERR_UNKNOWNCOMMAND(client, command) (":ft_irc 421 " + client + " " + command + " :Unknown command\r\n")
 
 // // INVITE
-// # define ERR_NEEDMOREPARAMS(client, command) (":ft_irc 461 " + client + " " + command + " :Not enough parameters.\r\n")
-// # define ERR_NOSUCHCHANNEL(client, channel) (":ft_irc 403 " + client + " #" + channel + " :No such channel\r\n")
-# define ERR_NOTONCHANNEL(nickname, channel_name) (":ft_irc 442 " + nickname + " #" + channel_name + " :The user is not on this channel.\r\n")
-// # define ERR_USERONCHANNEL(client, nick, channel) (":ft_irc 443 " + client + " " + nick + " #" + channel + " :Is already on channel\r\n")
-// # define RPL_INVITING(user_id, client, nick, channel) (user_id + " 341 " + client + " " + nick + " #" + channel + "\r\n")
+# define ERR_NEEDMOREPARAMS(nickname, command) (":ft_irc 461 " + nickname + " " + command + " :Not enough parameters.\r\n")
+# define ERR_NOSUCHCHANNEL(nickname, channel) (":ft_irc 403 " + nickname + " " + channel + " :No such channel\r\n")
+# define ERR_NOTONCHANNEL(nickname, channel) (":ft_irc 442 " + nickname + " #" + channel + " :The user is not on this channel.\r\n")
+# define ERR_USERONCHANNEL(username, nickname, channel) (":ft_irc 443 " + username + " " + nickname+ " " + channel + " :Is already on channel\r\n")
+# define RPL_INVITING(operator, invited_user, channel) (":ft_irc 341 " + operator + " " + invited_user + " " + channel + "\r\n")
 // # define RPL_INVITE(user_id, invited, channel) (user_id + " INVITE " + invited + " #" + channel + "\r\n")
 
 // JOIN
@@ -28,7 +28,7 @@
 
 // // KICK
 // # define ERR_USERNOTINCHANNEL(client, nickname, channel) ("441 " + client + " " + nickname + " #" + channel + " :They aren't on that channel\r\n")
-# define ERR_CHANOPRIVSNEEDED(nickname, channel_name) (":ft_irc 482 " + nickname + " #" +  channel_name + " :You're not channel operator\r\n")
+# define ERR_CHANOPRIVSNEEDED(nickname, channel_name) (":ft_irc 482 " + nickname + " " +  channel_name + " :You're not channel operator\r\n")
 # define RPL_KICK(channel_name, kicked, reason) (":ft_irc KICK " + channel_name + " " + kicked + " " + reason + "\r\n")
 //>> :ohertzbe!~ohertzbe@194.136.126.51 KICK #hah5 idiot :such an idiot
 
