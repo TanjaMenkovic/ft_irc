@@ -94,18 +94,22 @@ void Server::handle_mode(int client_fd, std::vector<std::string> tokens)
 {  
     std::string channel = tokens[0]; 
 
-    if (channel[0] != '#' && channel[0] != '&') { // check later if this is even needed
-        std::cerr << "Error: Invalid channel name '" << channel << "'. Channel names must start with '#' or '&'.\n";
+    // if (channel[0] != '#' && channel[0] != '&') { // check later if this is even needed
+    //     std::cerr << "Error: Invalid channel name '" << channel << "'. Channel names must start with '#' or '&'.\n";
+    //     return ;
+    // }
+    //std::string channel_name = channel.substr(1);
+    std::cout << "\nChannel name: " << channel << std::endl;
+    if (users[client_fd].isInChannel(channel) == false) {
+        std::cout << "User is not in the channel!" << std::endl;
         return ;
     }
-    std::string channel_name = channel.substr(1);
-    if (users[client_fd].isInChannel(channel_name) == false)
-        return ;
 
     std::string message;
 
     if (tokens.size() < 2) {
         // just ignoring it (check this)
+        std::cout << "Mode doesn't have any arguments!" << std::endl;
         return ;
     }
 

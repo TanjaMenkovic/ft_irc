@@ -4,9 +4,23 @@ namespace irc
 {
     User::~User() {}
 
-    User::User(int fd) : fd(fd), nickname("unknown"), username("unknown") {}
+    User::User(int fd) : fd(fd), nickname("unknown"), username("unknown") 
+    {
+        this->authenticated = false;
+        this->nick_received = false;
+        this->user_received = false;
+        this->pass_received = false;
+        this->mode_received = false;
+    }
 
-    User::User() : fd(-1), nickname(""), username("") {}
+    User::User() : fd(-1), nickname(""), username("") 
+    {
+        this->authenticated = false;
+        this->nick_received = false;
+        this->user_received = false;
+        this->pass_received = false;
+        this->mode_received = false;
+    }
 
     User::User(std::string nickname, std::string username, int fd): fd(fd), nickname(nickname), username(username) {}
 

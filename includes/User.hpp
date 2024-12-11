@@ -37,11 +37,11 @@ class User
         std::string nickname;
         std::string username;
         std::map<std::string, bool> joined_channels;
-        bool authenticated = false;
-        bool nick_received = false;
-        bool user_received = false;
-        bool pass_received = false;
-        bool mode_received = false;
+        bool authenticated;
+        bool nick_received;
+        bool user_received;
+        bool pass_received;
+        bool mode_received;
 
     public:
         ~User();
