@@ -7,6 +7,7 @@
 #include <map>
 #include <unordered_map>
 #include <algorithm>
+#include <vector>
 #include "User.hpp"
 
 /*
@@ -34,8 +35,8 @@ class Channel
         // invited users client_fd
         std::vector<int> invited_users;
         int user_limit;                             
-        bool invite_only;                           
-        bool topic_restricted_to_operators;         
+        bool invite_only; // i                          
+        bool topic_restricted_to_operators;  // t    
 
     public:
         ~Channel();
@@ -44,13 +45,9 @@ class Channel
         Channel(const Channel &copy);
         Channel &operator=(const Channel &src);
 
-        // Getters
-        // const std::unordered_map<std::string, bool>& getUsers() const;
-        // std::string getChannelNicks();
         const std::string& getName() const;
         const std::string& getTopic() const;
         const std::string& getPassword() const;
-        // User* getUserByNickname(const std::string &nickname) const;
         int  getUserLimit() const;
         bool getInviteOnly() const;
         bool getTopicRestricted() const;

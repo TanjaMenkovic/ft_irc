@@ -58,6 +58,7 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 break;
             case 4:
                 std::cout << "Handle MODE logic\n";
+                handle_mode(client_fd, tokens);
                 break;
             case 5:
                 std::cout << "Handle JOIN logic\n";
