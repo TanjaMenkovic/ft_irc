@@ -51,7 +51,7 @@ class Channel
         int  getUserLimit() const;
         bool getInviteOnly() const;
         bool getTopicRestricted() const;
-        std::vector<int> getInvitedUsers() const;
+        bool getIsUserInvited(const int& fd) const;
 
         // Setters
         void setTopic(const std::string& newTopic);

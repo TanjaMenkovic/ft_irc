@@ -60,9 +60,9 @@ namespace irc
         return this->topic_restricted_to_operators;
     }
 
-    std::vector<int> Channel::getInvitedUsers() const
+    bool Channel::getIsUserInvited(const int& fd) const
     {
-        return (this->invited_users);
+        return (find(invited_users.begin(), invited_users.end(), fd) != invited_users.end());
     }
     
 
