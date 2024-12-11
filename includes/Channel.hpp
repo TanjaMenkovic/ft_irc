@@ -30,8 +30,8 @@ class Channel
         std::string topic;
         std::string password;
         std::string name;
-        // std::map<std::string, User*> userptrs;
-        // std::unordered_map<std::string, bool> users;           // Set of users' nicknames in the channel            // Set of operators' nicknames (channel admins)
+        // invited users client_fd
+        std::vector<int> invited_users;
         int user_limit;                             
         bool invite_only;                           
         bool topic_restricted_to_operators;         
@@ -53,6 +53,7 @@ class Channel
         int  getUserLimit() const;
         bool getInviteOnly() const;
         bool getTopicRestricted() const;
+        std::vector<int> getInvitedUsers() const;
 
         // Setters
         void setTopic(const std::string& newTopic);
@@ -60,6 +61,8 @@ class Channel
         void setUserLimit(int limit);
         void setInviteOnly(bool inviteOnly);
         void setTopicRestrictedToOperators(bool restricted);
+        void addInvitedUser(const int& client_fd);
+        void removeInvitedUser(const int& client_fd);
 
         // functions
         

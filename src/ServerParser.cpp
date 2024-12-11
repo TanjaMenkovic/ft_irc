@@ -40,13 +40,18 @@ void Server::parse_commands(int client_fd, const std::string& line)
         switch (it->second) {
             case 1:
                 if (tokens.size() < 2) {
-                    std::cerr << "Error: too few arguments for kick!\n";
+                    std::string error_message =  ERR_NEEDMOREPARAMS(users[client_fd].getNickname(), "KICK");
+                    send_to_user(client_fd, error_message);
                     return ;
                 }
                 kick(client_fd, tokens);
                 break;
             case 2:
-                std::cout << "Handle INVITE logic\n";
+                if (tokens.size() < 2) {
+                    std::string error_message =  ERR_NEEDMOREPARAMS(users[client_fd].getNickname(), "INVITE");
+                    send_to_user(client_fd, error_message);
+                }
+                invite(client_fd, tokens);
                 break;
             case 3:
                 std::cout << "Handle TOPIC logic\n";
@@ -63,7 +68,8 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 break;
             case 6:
                 if (tokens.size() < 2) {
-                    std::cerr << "Error: too few arguments for privmessage!\n";
+                    std::string error_message =  ERR_NEEDMOREPARAMS(users[client_fd].getNickname(), "PRIVMSG");
+                    send_to_user(client_fd, error_message);
                     return ;
                 }
                 privmsg(client_fd, tokens);
