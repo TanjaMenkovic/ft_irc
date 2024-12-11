@@ -60,6 +60,12 @@ namespace irc
         return this->topic_restricted_to_operators;
     }
 
+    std::vector<int> Channel::getInvitedUsers() const
+    {
+        return (this->invited_users);
+    }
+    
+
     // Setters 
     void Channel::setTopic(const std::string& newTopic)
     {
@@ -85,6 +91,50 @@ namespace irc
     {
         this->topic_restricted_to_operators = restricted;
     }
+
+    void Channel::addInvitedUser(const int& client_fd) 
+    {
+        if (find(invited_users.begin(), invited_users.end(), client_fd) == invited_users.end()) {
+            this->invited_users.push_back(client_fd);
+        }
+    }
+
+    void Channel::removeInvitedUser(const int& client_fd)
+    {
+        std::vector<int>::iterator it = find(invited_users.begin(), invited_users.end(), client_fd);
+        if (it != invited_users.end()) {
+            invited_users.erase(it);
+        }
+    }
+
+    // functions
+    // bool Channel::addUser(const User &user, bool is_operator)
+    // {
+    //     if (users.size() >= static_cast<size_t>(user_limit) && user_limit != -1) {
+    //         std::string message = "User limit reached!\r\n";
+    //         std::cout << message << std::endl;
+    //         // send(user.getFd(), message.c_str(), message.length(), 0);
+    //         return false;
+    //     }
+    //     if (users.find(user.getNickname()) != users.end()) {
+    //         std::string message = " User is already in the channel!\r\n";
+    //         std::cout << message << std::endl;
+    //         // send(user.getFd(), message.c_str(), message.length(), 0);
+    //         return false;
+    //     }
+    //     if (is_operator) {
+    //         users.insert({user.getNickname(), true});
+    //         std::string message = "added user " + user.getNickname() + " to channel: " + name + "\r\n";
+    //         std::cout << message << std::endl;
+    //         // send(user.getFd(), message.c_str(), message.length(), 0);
+    //     } else {
+    //         std::string message = "added user as non-operator to channel\r\n";
+    //         std::cout << message << std::endl;
+    //         // send(user.getFd(), message.c_str(), message.length(), 0);
+    //         users.insert({user.getNickname(), false});
+    //     }
+    //     return true;
+    // }
     
     // bool Channel::removeUser(const User &user)
     // {

@@ -6,6 +6,7 @@
 #include <set>
 #include <map>
 #include <unordered_map>
+#include <vector>
 #include "User.hpp"
 
 /*
@@ -30,6 +31,8 @@ class Channel
         std::string topic;
         std::string password;
         std::string name;
+        // invited users client_fd
+        std::vector<int> invited_users;
         int user_limit;                             
         bool invite_only; // i                          
         bool topic_restricted_to_operators;  // t    
@@ -47,13 +50,24 @@ class Channel
         int  getUserLimit() const;
         bool getInviteOnly() const;
         bool getTopicRestricted() const;
+        std::vector<int> getInvitedUsers() const;
 
         // Setters
         void setTopic(const std::string& newTopic);
         void setPassword(const std::string& newPassword);    
         void setUserLimit(int limit);
         void setInviteOnly(bool inviteOnly);
-        void setTopicRestrictedToOperators(bool restricted);   
+        void setTopicRestrictedToOperators(bool restricted);
+        void addInvitedUser(const int& client_fd);
+        void removeInvitedUser(const int& client_fd);
+
+        // functions
+        
+        // bool addUser(const User &user, bool is_operator);
+        // bool removeUser(const User &user);
+        // bool addOperator(const User &op_user, std::string &nick_to_promote, std::map<int, irc::User> &_users);
+        // bool isOperator(const User &user) const;
+        // void broadcastMessage(const User &user, const std::string &message, const std::map<int, irc::User> &users) const;
 };
 
 }
