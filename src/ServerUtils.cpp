@@ -24,6 +24,14 @@ void Server::send_to_channel(std::string channel_name, std::string message) {
     }
 }
 
+void Server::send_to_channel_not_fd(int fd, std::string channel_name, std::string message) {
+    for (auto it : this->users) {
+        if (it.second.isInChannel(channel_name) && it.first != fd) {
+            send(it.first, message.c_str(), message.length(), 0);
+        }
+    }
+}
+
 // sending only to user with client_fd
 void Server::send_to_user(int client_fd, std::string message) {
     send(client_fd, message.c_str(), message.length(), 0);

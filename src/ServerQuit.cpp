@@ -3,30 +3,42 @@
 namespace irc 
 {
 
-// void Server::quit(int client_fd, const std::string reason, std::map<std::string, irc::Channel> &channels) {
-//     std::string message;
-//     const std::string& user_nickname = users[client_fd].getNickname(); // Get the user's nickname
+// Message irssi broadcasts to channels when user quits (on freenode.net):
+// 18:34 -!- tvalimak_ [~tvalimak@freenode-3ad.s3h.4nuk5f.IP] has quit [Quit: leaving]
 
-//     // Remove user from all channels
-//     for (std::map<std::string, irc::Channel>::iterator it = channels.begin(); it != channels.end(); ++it) {
-//         irc::Channel& channel = it->second;
+void Server::quit(int client_fd, const std::string& reason) {
 
-//         // Check if the user is in the channel
-//         const auto& users_map = channel.getUsers();
-//         if (users_map.find(user_nickname) != users_map.end()) {
-//             channel.removeUser(client_fd); // Remove the user from the channel
+    // Construct the quit message
+    std::string message = RPL_QUIT(users[client_fd].getUsername(), users[client_fd].getNickname(), reason);
 
-//             // Notify remaining users in the channel
-//             message = RPL_QUIT(users[client_fd].getUsername(), users[client_fd].getNickname(), reason);
-//             send_to_joined_channels(client_fd, message);
-//         }
-//     }
+    // Get the list of channels the user is part of
+    std::map<std::string, bool> joined_channels = users[client_fd].getJoinedChannels();
 
-//     // Log the quit event
-//     std::cout << "User " << user_nickname << " disconnected: " << reason << std::endl;
+    // Iterate through the joined channels
+    for (const auto& [channel_name, is_operator] : joined_channels) {
+        std::cout << channel_name << is_operator << "\n";
+            if (channels.find(channel_name) != channels.end()) {
+                send_to_channel(channel_name, message);
+            }
+            // Call leaveChannel for the channel
+            users[client_fd].leaveChannel(channel_name);
+            is_channel_empty(channel_name);
+    }
+    // Remove the user from the server
+    users.erase(client_fd);
+}
 
-//     // Remove the user from the server's user list
-//     users.erase(client_fd);
-// }
+// Make a function that iterates through all users and checks if any user is part of an given channel.
+// If no user is found to be part of the given channel, the channel will be removed
+void Server::is_channel_empty(std::string channel_name) {
+    for (auto it : this->users) {
+        if (it.second.isInChannel(channel_name)) {
+            return ;
+        }
+    }
+    // delete the channel
+    std::cout << "erasing channel:" << channel_name << "\n";
+    this->channels.erase(channel_name);
+}
 
-} // namespace irc
+}

@@ -24,6 +24,4 @@ bool Server::IsLimitReached(const std::string &channel_name) {
     return limit < number_of_users ? false : true;
 }
 
-
-
 }

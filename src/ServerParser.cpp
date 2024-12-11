@@ -19,7 +19,7 @@ void Server::parse_commands(int client_fd, const std::string& line)
     }
     
     if (tokens.empty()) {
-        std::cerr << "Error: No channel name provided in MODE command.\n";
+        std::cerr << "Error: No channel name provided in command.\n";
         return ;
     } 
 
@@ -39,7 +39,11 @@ void Server::parse_commands(int client_fd, const std::string& line)
     if (it != commandMap.end()) {
         switch (it->second) {
             case 1:
-                std::cout << "Handle KICK logic\n";
+                if (tokens.size() < 2) {
+                    std::cerr << "Error: too few arguments for kick!\n";
+                    return ;
+                }
+                kick(client_fd, tokens);
                 break;
             case 2:
                 std::cout << "Handle INVITE logic\n";
@@ -59,7 +63,11 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 join(client_fd, tokens[0], tokens[1]);
                 break;
             case 6:
-                std::cout << "Handle PRIVMSG logic\n";
+                if (tokens.size() < 2) {
+                    std::cerr << "Error: too few arguments for privmessage!\n";
+                    return ;
+                }
+                privmsg(client_fd, tokens);
                 break;
             case 7:
                 std::cout << "Handle NICK logic\n";
@@ -71,7 +79,7 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 break;
             case 9:
                 std::cout << "Handle QUIT logic\n";
-                // quit(client_fd, tokens[0], this->channels);
+                quit(client_fd, tokens[0]);
                 break;
             default:
                 std::cout << "Unknown command\n";

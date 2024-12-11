@@ -71,6 +71,15 @@ class Server
         // ServerParser.cpp
         void parse_commands(int client_fd, const std::string& line);
 
+
+        // ServerPrivmsg.cpp
+        void privmsg(int client_fd, std::vector<std::string> tokens);
+        void send_privmsg(int client_fd, const std::string& receiver, const std::string& privmessage);
+
+        // ServerKick.cpp
+        void kick_user(const std::string& channel_name, const std::string& reason, const std::string& user_to_kick);
+        void kick(int client_fd, std::vector<std::string> tokens);
+
         // ServerMode.cpp
         void handle_mode(int client_fd, std::vector<std::string> tokens);
         void channel_invite(int client_fd, std::string channel_name, std::string mode);
@@ -90,6 +99,7 @@ class Server
         // ServerUtils.cpp
         void send_to_joined_channels(int client_fd, std::string message);
         void send_to_channel(std::string channel_name, std::string message);
+        void send_to_channel_not_fd(int fd, std::string channel_name, std::string message);
         void send_to_user(int client_fd, std::string message);
 
         // ServerUser.cpp
@@ -100,8 +110,9 @@ class Server
         void addUser(int client_fd, std::string channel_name);
         void join(int client_fd, std::string channel_name, std::string channel_pass);
 
-        // void kick(User &user, const std::string client_data);
-        void quit(int client_fd, const std::string reason, std::map<std::string, irc::Channel> &channels);
+        // ServerQuit.cpp
+        void quit(int client_fd, const std::string& reason);
+        void is_channel_empty(std::string channel_name);
     public:
         ~Server();
         Server();
