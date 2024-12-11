@@ -55,6 +55,7 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 break;
             case 3:
                 std::cout << "Handle TOPIC logic\n";
+                topic(client_fd, tokens);
                 break;
             case 4:
                 std::cout << "Handle MODE logic\n";

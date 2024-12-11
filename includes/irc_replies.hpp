@@ -102,7 +102,7 @@
 
 // TOPIC
 # define RPL_TOPIC(nickname, channel_name, topic) (":ft_irc 332 " + nickname + " #" + channel_name + " " + topic + "\r\n")
-// # define RPL_NOTOPIC(client, channel) (":ft_irc 331 " + client + " #" + channel + " :No topic is set\r\n")
+# define RPL_NOTOPIC(nickname, channel_name) (":ft_irc 331 " + nickname + " #" + channel_name + " :No topic is set\r\n")
 
 // // USER
 // # define ERR_ALREADYREGISTERED(client) (":ft_irc 462 " + client + " :You may not reregister.\r\n")
