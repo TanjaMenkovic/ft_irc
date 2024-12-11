@@ -53,6 +53,11 @@ namespace irc
         return this->pass_received;
     }
 
+    bool User::getModeReceived() const
+    {
+        return this->mode_received;
+    }
+
     bool User::getAuthenticated() const
     {
         return this->authenticated;
@@ -61,6 +66,12 @@ namespace irc
     int User::getFd() const
     {
         return this->fd;
+    }
+
+    bool User::GetOperator(std::string channel_name) {
+        if (isInChannel(channel_name))
+            return joined_channels[channel_name];
+        return false;
     }
     
     const std::map<std::string, bool>& User::getJoinedChannels() const
@@ -93,6 +104,11 @@ namespace irc
         this->pass_received = true;
     }
 
+    void User::setModeReceived()
+    {
+        this->mode_received = true;
+    }
+
     void User::setAsAuthenticated()
     {
         this->authenticated = true;
@@ -120,6 +136,11 @@ namespace irc
         if (isInChannel(channel_name) && joined_channels[channel_name])
             return true;
         return false;
+    }
+
+    void User::SetOperator(std::string channel_name, bool is_operator) {
+        if (isInChannel(channel_name))
+            joined_channels[channel_name] = is_operator;
     }
 
     // void User::send_numeric_reply(int reply_code, const std::string &message, const std::string &server_name) {

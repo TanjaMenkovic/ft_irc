@@ -50,9 +50,9 @@ namespace irc
  * RPL_CHANNELMODEIS(nickname, channel_name, modes) (":ft_irc 324 " + nickname + " #" + channel_name + " +" + modes + "\r\n")
  * ERR_NOSUCHNICK(nickname, target) (":ft_irc 401 " + nickname + " " + target + " :No such nick\r\n")
  * MODE_USERMSG(nickname, username, channel_name, mode) (":" + nickname + "!~" + username + "@ft_irc" + " MODE " + channel_name + " :" + mode + "\r\n")
- * ERR_INVALIDMODEPARAM(client, channel, mode, password) (":ft_irc 696 " + client + " #" + channel + " " + mode + " " + password + " : password must only contained alphabetic character\r\n")
- * 
- * 
+ * ERR_INVALIDMODEPARAM(nickname, channel_name, mode, param) (":ft_irc 696 " + nickname + " #" + channel_name + " " + mode + " " + param + " : invalid parameter\r\n")
+ * ERR_UNKNOWNMODE(nickname, mode) (":ft_irc 472 " + nickname + " " + mode + " :is not a recognised channel mode.\r\n")
+ * ERR_CHANOPRIVSNEEDED(nickname, channel_name) (":ft_irc 482 " + nickname + " #" +  channel_name + " :You're not channel operator\r\n")
  * 
  * when I just type mode without any arg I am getting:
  * :*.freenode.net 324 tmenkovi #bla :+nt <- NO!
@@ -92,13 +92,15 @@ namespace irc
 
 void Server::handle_mode(int client_fd, std::vector<std::string> tokens)
 {  
-    std::string channel = tokens[0]; // check later if this is even needed
-    if (channel[0] != '#' && channel[0] != '&') {
+    std::string channel = tokens[0]; 
+
+    if (channel[0] != '#' && channel[0] != '&') { // check later if this is even needed
         std::cerr << "Error: Invalid channel name '" << channel << "'. Channel names must start with '#' or '&'.\n";
         return ;
-    } else {
-        channel = channel.substr(1);
     }
+    std::string channel_name = channel.substr(1);
+    if (users[client_fd].isInChannel(channel_name) == false)
+        return ;
 
     std::string message;
 
@@ -107,59 +109,181 @@ void Server::handle_mode(int client_fd, std::vector<std::string> tokens)
         return ;
     }
 
-    for (size_t i = 1; i < tokens.size(); ++i) {
-        const std::string& mode = tokens[i];
+    // check separately when it is not starting with +/-
 
+    const std::string& mode = tokens[1];
+    if ((mode[0] == '+' || mode[0] == '-') && mode.length() == 1)
+        return ; // ignore it (check this)
 
-        if ((mode[0] == '+' || mode[0] == '-') && mode.length() == 1)
-            return ; // ignore it (check this)
-
-        if (mode[0] == '+') {
-            if (mode[1] == 'i' && mode.length() == 2 && tokens.size() >= 2) {
-
-            } else if (mode[1] == 't' && mode.length() == 2  && tokens.size() >= 2) {
-
-            } else if (mode[1] == 'k' && mode.length() == 2  && tokens.size() >= 3) {
-
-            } else if (mode[1] == 'o' && mode.length() == 2  && tokens.size() >= 3) {
-
-            } else if (mode[1] == 'l' && mode.length() == 2  && tokens.size() >= 3) {
-
-            } else { // incorrect mode
-                message = 
-            }
-        } else if (mode[0] == '-') {
-            if (mode[1] == 'i' && mode.length() == 2) {
-
-            } else if (mode[1] == 't' && mode.length() == 2 && tokens.size() >= 2) {
-
-            } else if (mode[1] == 'k' && mode.length() == 2 && tokens.size() >= 2) {
-
-            } else if (mode[1] == 'o' && mode.length() == 2 && tokens.size() >= 3) {
-
-            } else if (mode[1] == 'l' && mode.length() == 2 && tokens.size() >= 2) {
-
-            } else { // incorrect mode
-
-            }
-        } else { // if it doesn't start with +/-
-            message = ERR_NOSUCHNICK(users[client_fd].getNickname(), tokens[i]);
+    if (mode[0] == '+' && mode.length() == 2) {
+        if (check_if_operator(client_fd, channel) == false) {
+            return ;
+        }
+        if (mode[1] == 'i' && tokens.size() >= 2) {
+            channel_invite(client_fd, channel, "+i");
+        } else if (mode[1] == 't' && tokens.size() >= 2) {
+            channel_topic(client_fd, channel, "+t");
+        } else if (mode[1] == 'k' && tokens.size() >= 3) {
+            channel_password(client_fd, channel, "+k", tokens[2]);
+        } else if (mode[1] == 'o' && tokens.size() >= 3) {
+            channel_user(client_fd, channel, "+o", tokens[2]);
+        } else if (mode[1] == 'l' && tokens.size() >= 3) {
+            channel_limit(client_fd, channel, "+l", tokens[2]);
+        } else { // incorrect mode
+            message = ERR_UNKNOWNMODE(users[client_fd].getNickname(), mode);
             send_to_user(client_fd, message);
             return ;
-        } 
+        }
+    } else if (mode[0] == '-' && mode.length() == 2) {
+        if (check_if_operator(client_fd, channel) == false) {
+            return ;
+        }
+        if (mode[1] == 'i' && tokens.size() >= 2) {
+            channel_invite(client_fd, channel, "-i");
+        } else if (mode[1] == 't' && tokens.size() >= 2) {
+            channel_topic(client_fd, channel, "+t");
+        } else if (mode[1] == 'k' && tokens.size() >= 2) {
+            channel_password(client_fd, channel, "-k", "");
+        } else if (mode[1] == 'o' && tokens.size() >= 3) {
+            channel_user(client_fd, channel, "-o", tokens[2]);
+        } else if (mode[1] == 'l' && tokens.size() >= 2) {
+            channel_limit(client_fd, channel, "-l", "");
+        } else { // incorrect mode
+            message = ERR_UNKNOWNMODE(users[client_fd].getNickname(), mode);
+            send_to_user(client_fd, message);
+            return ;
+        }
+    } else { // if it doesn't start with +/-
+        message = ERR_NOSUCHNICK(users[client_fd].getNickname(), mode);
+        send_to_user(client_fd, message);
+        return ;
+    } 
 
-
-    }
 
     std::cout << "Finished processing MODE command for channel " << channel << std::endl;
 }
 
-void Server::channel_invite(int client_fd) {
+bool Server::check_if_operator(int client_fd, std::string channel_name) {
+    if (users[client_fd].GetOperator(channel_name) == false) {
+        std::string message = ERR_CHANOPRIVSNEEDED(users[client_fd].getNickname(), channel_name);
+        send_to_user(client_fd, message);
+        return false;
+    }
+    return true;
+}
+
+void Server::channel_invite(int client_fd, std::string channel_name, std::string mode) {
     std::string message;
 
-    message = MODE_USERMSG(nickname, username, channel_name, mode);
+    message = MODE_USERMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name, mode);
+    send_to_joined_channels(client_fd, message);
 
-    send_to_
+    if (mode == "+i") {
+        channels[channel_name].setInviteOnly(true);
+    } else {
+        channels[channel_name].setInviteOnly(false);
+    }
+}
+
+void Server::channel_topic(int client_fd, std::string channel_name, std::string mode) {
+    std::string message;
+
+    message = MODE_USERMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name, mode);
+    send_to_joined_channels(client_fd, message);
+
+    if (mode == "+t") {
+        channels[channel_name].setTopicRestrictedToOperators(true);
+    } else {
+        channels[channel_name].setTopicRestrictedToOperators(false);
+    }
+}
+
+void Server::channel_password(int client_fd, std::string channel_name, std::string mode, std::string password) {
+    std::string message;
+
+    if (mode == "+k") {
+        channels[channel_name].setPassword(password);
+        mode += " " + password;
+    } else {
+        channels[channel_name].setPassword("");
+    }
+    
+    message = MODE_USERMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name, mode);
+    send_to_joined_channels(client_fd, message);
+}
+
+bool Server::is_in_channel(std::string user_nickname, std::string channel_name, bool is_operator) {
+    for (auto it : this->users) {
+        if (it.second.getNickname() == user_nickname && it.second.isInChannel(channel_name)) {
+            it.second.SetOperator(channel_name, is_operator);
+            return true;
+        }
+    }
+    return false;
+}
+
+void Server::channel_user(int client_fd, std::string channel_name, std::string mode, std::string user_nickname) {
+    std::string message;
+    bool is_operator;
+
+    if (mode == "+o") {
+        is_operator = true;
+    } else {
+        is_operator = false;
+    }
+
+    if (is_in_channel(user_nickname, channel_name, is_operator) == false) {
+        message = ERR_NOSUCHNICK(user_nickname, mode);
+        send_to_user(client_fd, message);
+        return ;
+    }
+
+    mode += " " + user_nickname;
+    message = MODE_USERMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name, mode);
+    send_to_joined_channels(client_fd, message);
+}
+
+static bool isValidLimit(const std::string& str) 
+{
+    if (str.empty()) 
+        return false;
+
+    for (size_t i = 0; i < str.length(); i++) 
+    {
+        if (!std::isdigit(str[i]))
+            return false;
+    }
+
+    if (str.length() > 1 && str[0] == '0')
+        return false;
+
+    int str_int = std::stoi(str);
+    if (str != std::to_string(str_int))
+        return false;
+
+    return true;
+}
+
+void Server::channel_limit(int client_fd, std::string channel_name, std::string mode, std::string limit_str) {
+    std::string message;
+    int limit;
+
+    if (isValidLimit(limit_str) == false) {
+        message = ERR_INVALIDMODEPARAM(users[client_fd].getNickname(), channel_name, mode, limit_str);
+        send_to_user(client_fd, message);
+        return ;
+    }
+
+    limit = std::stoi(limit_str);
+    if (mode == "+l") {
+        channels[channel_name].setUserLimit(limit);
+        mode += " " + std::to_string(limit);
+    } else {
+        channels[channel_name].setUserLimit(-1);
+    }
+    
+    message = MODE_USERMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name, mode);
+    send_to_joined_channels(client_fd, message);
 }
 
 }

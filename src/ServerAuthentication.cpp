@@ -87,5 +87,10 @@ void Server::send_welcome_message(int client_fd, const std::string& nickname) {
     std::cout << "Sent welcome message to client: " << nickname << "\n";
 }
 
+void Server::send_mode_message(int client_fd, const std::string& nickname) {
+    std::string welcome_msg = ":ft_irc 002 " + nickname + " :Your host is ft_irc.\r\n";
+    send(client_fd, welcome_msg.c_str(), welcome_msg.length(), 0);
+    std::cout << "Sent welcome message to client: " << nickname << "\n";
+}
 
 }

@@ -28,7 +28,7 @@
 
 // // KICK
 // # define ERR_USERNOTINCHANNEL(client, nickname, channel) ("441 " + client + " " + nickname + " #" + channel + " :They aren't on that channel\r\n")
-// // # define ERR_CHANOPRIVSNEEDED(client, channel) ("482 " + client + " #" +  channel + " :You're not channel operator\r\n")
+# define ERR_CHANOPRIVSNEEDED(nickname, channel_name) (":ft_irc 482 " + nickname + " #" +  channel_name + " :You're not channel operator\r\n")
 // # define RPL_KICK(user_id, channel, kicked, reason) (user_id + " KICK #" + channel + " " + kicked + " " + reason + "\r\n")
 
 // // KILL
@@ -49,9 +49,10 @@
 // #define ERR_CANNOTSENDTOCHAN(client, channel) ("404 " + client + " #" + channel + " :Cannot send to channel\r\n")
 # define ERR_CHANNELISFULL(nickname, channel_name) (":ft_irc 471 " + nickname + " #" + channel_name + " :Cannot join channel (+l) - channel is full, try again later\r\n")
 # define ERR_INVITEONLYCHAN(nickname, channel_name) (":ft_irc 473 " + nickname + " #" + channel_name + " :Cannot join channel (+i) - you must be invited\r\n")
+# define ERR_UNKNOWNMODE(nickname, mode) (":ft_irc 472 " + nickname + " " + mode + " :is not a recognised channel mode.\r\n")
 
 // #define ERR_CHANOPRIVSNEEDED(client, channel) (":ft_irc 482 " + client + " #" + channel + " :You're not channel operator\r\n")
-#define ERR_INVALIDMODEPARAM(client, channel, mode, password) ("696 " + client + " #" + channel + " " + mode + " " + password + " : password must only contained alphabetic character\r\n")
+#define ERR_INVALIDMODEPARAM(nickname, channel_name, mode, param) (":ft_irc 696 " + nickname + " #" + channel_name + " " + mode + " " + param + " : invalid parameter\r\n")
 // // RPL_ERR a broadcoast quand user pas +v ou operator veut parler
 //       // dans notre cas c'était tiff (client) qui voulait send a message
 //       // :lair.nl.eu.dal.net 404 tiff #pop :Cannot send to channel
