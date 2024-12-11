@@ -42,19 +42,24 @@ namespace irc
 
 
 void Server::topic(int client_fd, std::vector<std::string> tokens) {
-	std::string server_name;
+	std::string channel_name;
 	std::string topic;
 	std::string message;
 
     std::cout << "inside topic command with user " << users[client_fd].getNickname() << "\n";
+    // first if-else block in case channel name param is provided
 	// first add check that if channel name is given and if the channel exists and is user on that channel
     if (tokens[0].at(0) == '#') {
         if (!users[client_fd].isInChannel(tokens[0])) {
         	message = ERR_NOTONCHANNEL(users[client_fd].getNickname(), tokens[0]);
         	send_to_user(client_fd, message);
         	return ;
-    // add check to see if user is operator in the channel
-    
+    // if channel mode is +t, add check to see if user is operator in the channel
+        if (channels[tokens[0]].getTopicRestricted()) {
+            if (!users[client_fd].isOperator(tokens[0])) {
+                message = ERR_CHANOPRIVSNEEDED(users[client_fd].getNickname(), tokens[0]);
+            }
+        }
     }
 	// if no channelname is given, check if the command was input on a channel that the user is joined in
 }
