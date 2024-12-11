@@ -5,10 +5,10 @@ namespace irc
     Channel::~Channel() {}
 
     Channel::Channel() 
-    : topic(""), password(""), name(""), user_limit(-1), invite_only(false), topic_restricted_to_operators(false) {}
+    : topic(""), password(""), name(""), user_limit(-1), invite_only(false), topic_restricted_to_operators(true) {}
 
     Channel::Channel(const std::string &name) 
-    : topic(""), password(""), name(name), user_limit(-1), invite_only(false), topic_restricted_to_operators(false) {}
+    : topic(""), password(""), name(name), user_limit(-1), invite_only(false), topic_restricted_to_operators(true) {}
 
     Channel::Channel(const Channel &copy)
     {
@@ -29,29 +29,6 @@ namespace irc
         }
         return *this;
     }
-
-    // User* Channel::getUserByNickname(const std::string &nickname) const {
-    //     auto it = userptrs.find(nickname);
-    //     if (it != userptrs.end()) {
-    //         return it->second;  // Return the User* if found
-    //     }
-    //     return nullptr;  // Return nullptr if not found
-    // }
-
-    // Getters 
-    // const std::unordered_map<std::string, bool>& Channel::getUsers() const
-    // {
-    //     return (this->users);
-    // }
-    //std::unordered_map<std::string, bool> users;  
-    // std::string Channel::getChannelNicks()
-    // {
-    //     std::string channelUsers = "";
-    //     for (const auto &[nickname, is_operator]: this->users) {
-    //         channelUsers += nickname + " "; 
-    //     }
-    //     return (channelUsers);
-    // }
 
     const std::string& Channel::getTopic() const
     {
@@ -83,9 +60,9 @@ namespace irc
         return this->topic_restricted_to_operators;
     }
 
-    std::vector<int> Channel::getInvitedUsers() const
+    bool Channel::getIsUserInvited(const int& fd) const
     {
-        return (this->invited_users);
+        return (find(invited_users.begin(), invited_users.end(), fd) != invited_users.end());
     }
     
 

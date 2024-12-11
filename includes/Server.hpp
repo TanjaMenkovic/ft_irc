@@ -56,7 +56,6 @@ class Server
         bool poll_connections(int server_socket, std::vector<pollfd>& fds);
         void accept_new_client(int server_socket, std::vector<pollfd>& fds);
         bool process_client_input(int client_fd);
-        void send_welcome_message(int client_fd, const std::string& nickname);
         void handle_ping_pong(int client_fd, const std::string& line, const std::string &server_name);
         void close_client(int client_fd, std::vector<pollfd>& fds, size_t index);
 
@@ -66,6 +65,8 @@ class Server
         void handle_nick(int client_fd, const std::string& line);
         void handle_user(int client_fd, const std::string& line);
         void handle_password_phase(int client_fd, const std::string& line);
+        void send_mode_message(int client_fd, const std::string& nickname);
+        void send_welcome_message(int client_fd, const std::string& nickname);
 
         // ServerParser.cpp
         void parse_commands(int client_fd, const std::string& line);
@@ -87,6 +88,13 @@ class Server
 
         // ServerMode.cpp
         void handle_mode(int client_fd, std::vector<std::string> tokens);
+        void channel_invite(int client_fd, std::string channel_name, std::string mode);
+        void channel_topic(int client_fd, std::string channel_name, std::string mode);
+        void channel_password(int client_fd, std::string channel_name, std::string mode, std::string password);
+        void channel_limit(int client_fd, std::string channel_name, std::string mode, std::string limit_str);
+        void channel_user(int client_fd, std::string channel_name, std::string mode, std::string user_nickname);
+        bool is_in_channel(std::string user_nickname, std::string channel_name, bool is_operator);
+        bool check_if_operator(int client_fd, std::string channel_name);
 
         // ServerPing.cpp
         void handle_ping_pong(int client_fd, std::vector<std::string> tokens);

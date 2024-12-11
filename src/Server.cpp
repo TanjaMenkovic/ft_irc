@@ -56,10 +56,12 @@ int Server::setup_server() {
 
     int server_socket = create_socket();
     if (server_socket < 0) {
+        std::cout << "Socket wasn't created!" << std::endl;
         return false;
     }
 
     if (!bind_and_listen(server_socket)) {
+        std::cout << "Server can't listen!" << std:: endl;
         return false;
     }
 
@@ -103,12 +105,14 @@ bool Server::bind_and_listen(int server_socket) const {
     if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         perror("Bind failed");
         close(server_socket);
+        std::cout << "bind failed" << std::endl;
         return false;
     }
 
     if (listen(server_socket, 10) < 0) {
         perror("Listen failed");
         close(server_socket);
+        std::cout << "listen failed" << std::endl;
         return false;
     }
 
@@ -232,7 +236,14 @@ bool Server::process_client_input(int client_fd) {
         if (users[client_fd].getAuthenticated() == false)
             authentication(client_fd, line);
 
-        parse_commands(client_fd, line);
+        if (users[client_fd].getModeReceived() == false) {
+            if (line.find("MODE ") == 0){
+                send_mode_message(client_fd, users[client_fd].getNickname());
+                this->users[client_fd].setModeReceived();
+            }
+        } else {
+            parse_commands(client_fd, line);
+        }
     }
 
     return true;

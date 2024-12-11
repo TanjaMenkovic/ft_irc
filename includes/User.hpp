@@ -37,10 +37,11 @@ class User
         std::string nickname;
         std::string username;
         std::map<std::string, bool> joined_channels;
-        bool authenticated = false;
-        bool nick_received = false;
-        bool user_received = false;
-        bool pass_received = false;
+        bool authenticated;
+        bool nick_received;
+        bool user_received;
+        bool pass_received;
+        bool mode_received;
 
     public:
         ~User();
@@ -55,6 +56,7 @@ class User
         bool getNickReceived() const;
         bool getUserReceived() const;
         bool getPassReceived() const;
+        bool getModeReceived() const;
         bool getAuthenticated() const;
         int  getFd() const;
         const std::map<std::string, bool>& getJoinedChannels() const;
@@ -64,6 +66,7 @@ class User
         void setNickReceived();
         void setUserReceived();
         void setPassReceived();
+        void setModeReceived();
         void setAsAuthenticated();
 
         void joinChannel(const std::string &channel_name, bool is_operator);
@@ -71,6 +74,9 @@ class User
 
         bool isInChannel(const std::string &channel_name);
         bool isOperator(const std::string &channel_name);
+
+        bool GetOperator(std::string channel_name);
+        void SetOperator(std::string channel_name, bool is_operator);
 
         // void send_numeric_reply(int reply_code, const std::string &message, const std::string &server_name);
 };
