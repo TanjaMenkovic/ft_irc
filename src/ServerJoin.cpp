@@ -63,6 +63,9 @@ void Server::addUser(int client_fd, std::string channel_name)
         send_to_user(client_fd, message);
     } else { // channel exists
         if (users[client_fd].isInChannel(channel_name) == false) { // and user is not in the channel
+            if (channels[channel_name].getIsUserInvited(client_fd)) { // has user been invited
+                channels[channel_name].removeInvitedUser(client_fd); // remove from invite list when user joins
+            }
             users[client_fd].joinChannel(channel_name, false);
             message = RPL_JOIN(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name);
             send_to_channel(channel_name, message);
@@ -90,7 +93,7 @@ void Server::join(int client_fd, std::string channel_name, std::string channel_p
             send_to_user(client_fd, message);
             return ;
         }
-        if (channels[channel_name].getInviteOnly()) { // channel is invite only
+        if (channels[channel_name].getInviteOnly() && !channels[channel_name].getIsUserInvited(client_fd)) { // channel is invite only
             message = ERR_INVITEONLYCHAN(users[client_fd].getNickname(), channel_name);
             send_to_user(client_fd, message);
             return ;
