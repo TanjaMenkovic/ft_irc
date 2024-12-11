@@ -13,7 +13,7 @@
 // // INVITE
 // # define ERR_NEEDMOREPARAMS(client, command) (":ft_irc 461 " + client + " " + command + " :Not enough parameters.\r\n")
 // # define ERR_NOSUCHCHANNEL(client, channel) (":ft_irc 403 " + client + " #" + channel + " :No such channel\r\n")
-// # define ERR_NOTONCHANNEL(client, channel) (":ft_irc 442 " + client + " #" + channel + " :The user is not on this channel.\r\n")
+# define ERR_NOTONCHANNEL(nickname, channel_name) (":ft_irc 442 " + nickname + " #" + channel_name + " :The user is not on this channel.\r\n")
 // # define ERR_USERONCHANNEL(client, nick, channel) (":ft_irc 443 " + client + " " + nick + " #" + channel + " :Is already on channel\r\n")
 // # define RPL_INVITING(user_id, client, nick, channel) (user_id + " 341 " + client + " " + nick + " #" + channel + "\r\n")
 // # define RPL_INVITE(user_id, invited, channel) (user_id + " INVITE " + invited + " #" + channel + "\r\n")
