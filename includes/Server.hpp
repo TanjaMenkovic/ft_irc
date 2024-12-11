@@ -70,6 +70,9 @@ class Server
         // ServerParser.cpp
         void parse_commands(int client_fd, const std::string& line);
 
+        //ServerInvite.cpp
+        void invite(int client_fd, std::vector<std::string> tokens);
+        void invite_user(const std::string &invited_user, const std::string& channel_name, int client_fd);
 
         // ServerPrivmsg.cpp
         void privmsg(int client_fd, std::vector<std::string> tokens);
