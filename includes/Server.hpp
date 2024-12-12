@@ -14,6 +14,7 @@
 #include <poll.h>
 #include <sstream>
 #include <map>
+#include <unordered_map>
 #include <atomic>
 #include <csignal>
 
@@ -56,7 +57,6 @@ class Server
         bool poll_connections(int server_socket, std::vector<pollfd>& fds);
         void accept_new_client(int server_socket, std::vector<pollfd>& fds);
         bool process_client_input(int client_fd);
-        void handle_ping_pong(int client_fd, const std::string& line, const std::string &server_name);
         void close_client(int client_fd, std::vector<pollfd>& fds, size_t index);
 
         // ServerAuthentication.cpp

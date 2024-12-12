@@ -11,10 +11,10 @@ bool isValidPort(const std::string& str)
             return false;
     }
 
-    if (str.length() > 1 && str[0] == '0')
+    if ((str.length() > 1 && str[0] == '0') || str.length() > 5)
         return false;
 
-    if (std::stoi(str) < 0 || std::stoi(str) > 65535)
+    if (std::stoi(str) < 1024 || std::stoi(str) > 65535)
         return false;
     return true;
 }
