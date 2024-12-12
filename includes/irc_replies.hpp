@@ -16,8 +16,8 @@
 # define ERR_NOTONCHANNEL(nickname, channel) (":ft_irc 442 " + nickname + " #" + channel + " :The user is not on this channel.\r\n")
 # define ERR_USERONCHANNEL(username, nickname, channel) (":ft_irc 443 " + username + " " + nickname+ " " + channel + " :Is already on channel\r\n")
 # define RPL_INVITING(operator, invited_user, channel) (":ft_irc 341 " + operator + " " + invited_user + " " + channel + "\r\n")
-//>> :ohertzbe!~ohertzbe@194.136.126.52 INVITE ohertzbe_ :#ahah23
-# define RPL_INVITE(user_id, invited, channel) (user_id + " INVITE " + invited + " " + channel + "\r\n")
+// :ohertzbe!~ohertzbe@194.136.126.52 INVITE ohertzbe_ :#chan4412
+# define RPL_INVITE(nickname, username, invited, channel) (":" + nickname + "!~" + username + "@ft_irc INVITE " + invited + " " + channel + "\r\n")
 
 // JOIN
 // use getChannelNicks to get list_of_nicks
