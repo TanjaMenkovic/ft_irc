@@ -22,8 +22,18 @@ namespace irc
 
     void Server::invite_user(const std::string &invited_user, const std::string& channel_name, int client_fd) {
         std::string message;
+        int         invited_fd;
+
+        for (auto &[fd, user]: users) {
+            if (user.getNickname() == invited_user) {
+                invited_fd = user.getFd();
+                break ;
+            }
+        }
         message = RPL_INVITING(users[client_fd].getNickname(), invited_user, channel_name);
         send_to_user(client_fd, message);
+        message = RPL_INVITE(users[client_fd].getNickname(), invited_user, channel_name);
+        send_to_user(invited_fd, message);
         if (channels[channel_name].getInviteOnly()) { // channel invite only so we add invited user to channel invite list
             for (auto &[fd, user]: users) { // find invited user fd from users
                 if (user.getNickname() == invited_user) { // add invited users fd to invited users in channel
