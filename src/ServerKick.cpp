@@ -23,8 +23,7 @@ namespace irc
 
         channel_name = tokens[0];
         kick_nickname = tokens[1];
-
-        if (tokens.size() > 2) { // if we have more tokens than user we want to kick and channel, we add those to reason
+        if (tokens.size() > 3) { // if we have more tokens than user we want to kick and channel, we add those to reason
             std::vector<std::string>::iterator it = tokens.begin() + 2; // it points to first reason string
             while (it != tokens.end()) { // add all reason strings to reason separated by space
                 reason += *it + " ";
@@ -35,6 +34,9 @@ namespace irc
         for (auto it = users.begin(); it != users.end(); it++) { // loop through users to find user we want to kick from nickname string
             if (it->second.getNickname() == kick_nickname) {
                 if (it->second.isInChannel(channel_name)) {
+                    if (reason == " ") {
+                        reason = kick_nickname;
+                    }
                     found = true;
                     break ;
                 }

@@ -1,0 +1,44 @@
+# Valid input values
+
+./ircserv
+Incorrect number of values!
+
+./ircserv 8080 vsdvg fbssdb bsdbsbdsb
+Incorrect number of values!
+
+./ircserv fbdbfdb bbfdbfdbd
+Port is incorrect!
+
+./ircserv 5353533535 bbfdbfdbd
+Port is incorrect!
+
+# NICK: /nick <new_nickname>
+
+
+# KICK
+/kick idiot(user not doesn't exist)
+idiot: No such nick/channel
+
+/kick <user doesn't exist in channel>
+ohertzbe1: No such nick/channel
+
+trying to kick as non-operator
+#chan2 You're not channel operator
+
+kicking user in channel as operator
+/kick <channel user>
+ohertzbe1 was kicked from #chan2 by ft_irc [  ] (showing for everyone in channel)
+
+operator kicking himself
+/kick <self>
+
+
+# INVITE 
+invite user to channel
+invite user to channel with +i
+invite user, have user join, then kick user, do +i, and user cannot join before being invited again
+
+#PRIVMSG
+
+writing privmsg to channel working
+

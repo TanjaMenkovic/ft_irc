@@ -16,7 +16,8 @@
 # define ERR_NOTONCHANNEL(nickname, channel) (":ft_irc 442 " + nickname + " #" + channel + " :The user is not on this channel.\r\n")
 # define ERR_USERONCHANNEL(username, nickname, channel) (":ft_irc 443 " + username + " " + nickname+ " " + channel + " :Is already on channel\r\n")
 # define RPL_INVITING(operator, invited_user, channel) (":ft_irc 341 " + operator + " " + invited_user + " " + channel + "\r\n")
-// # define RPL_INVITE(user_id, invited, channel) (user_id + " INVITE " + invited + " #" + channel + "\r\n")
+// :ohertzbe!~ohertzbe@194.136.126.52 INVITE ohertzbe_ :#chan4412
+# define RPL_INVITE(nickname, username, invited, channel) (":" + nickname + "!~" + username + "@ft_irc INVITE " + invited + " " + channel + "\r\n")
 
 // JOIN
 // use getChannelNicks to get list_of_nicks
@@ -45,11 +46,11 @@
 // /* channel mode */
 // #define MODE_CHANNELMSG(channel, mode) (":ft_irc MODE #" + channel + " " + mode + "\r\n")
 // #define MODE_CHANNELMSGWITHPARAM(channel, mode, param) (":ft_irc MODE #" + channel + " " + mode + " " + param + "\r\n")
-# define RPL_CHANNELMODEIS(nickname, channel_name, modes) (":ft_irc 324 " + nickname + " #" + channel_name + " +" + modes + "\r\n")
+# define RPL_CHANNELMODEIS(nickname, channel_name, modes) (":ft_irc 324 " + nickname + " " + channel_name + " +" + modes + "\r\n")
 // #define RPL_CHANNELMODEISWITHKEY(client, channel, mode, password) (":ft_irc 324 " + client + " #" + channel + " " + mode + " " + password + "\r\n")
-// #define ERR_CANNOTSENDTOCHAN(client, channel) ("404 " + client + " #" + channel + " :Cannot send to channel\r\n")
-# define ERR_CHANNELISFULL(nickname, channel_name) (":ft_irc 471 " + nickname + " #" + channel_name + " :Cannot join channel (+l) - channel is full, try again later\r\n")
-# define ERR_INVITEONLYCHAN(nickname, channel_name) (":ft_irc 473 " + nickname + " #" + channel_name + " :Cannot join channel (+i) - you must be invited\r\n")
+#define ERR_CANNOTSENDTOCHAN(client, channel) (":ft_irc 404 " + client + " " + channel + " :Cannot send to channel\r\n")
+# define ERR_CHANNELISFULL(nickname, channel_name) (":ft_irc 471 " + nickname + " " + channel_name + " :Cannot join channel (+l) - channel is full, try again later\r\n")
+# define ERR_INVITEONLYCHAN(nickname, channel_name) (":ft_irc 473 " + nickname + " " + channel_name + " :Cannot join channel (+i) - you must be invited\r\n")
 # define ERR_UNKNOWNMODE(nickname, mode) (":ft_irc 472 " + nickname + " " + mode + " :is not a recognised channel mode.\r\n")
 
 // #define ERR_CHANOPRIVSNEEDED(client, channel) (":ft_irc 482 " + client + " #" + channel + " :You're not channel operator\r\n")
