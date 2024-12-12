@@ -77,6 +77,7 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 privmsg(client_fd, tokens);
                 break;
             case 7:
+                std::cout << "at NICK case in switch\n";
                 if (tokens.size() < 1)  {
                     tokens.push_back("");
                 }
