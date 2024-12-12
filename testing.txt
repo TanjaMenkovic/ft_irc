@@ -1,0 +1,16 @@
+# Valid input values
+
+./ircserv
+Incorrect number of values!
+
+./ircserv 8080 vsdvg fbssdb bsdbsbdsb
+Incorrect number of values!
+
+./ircserv fbdbfdb bbfdbfdbd
+Port is incorrect!
+
+./ircserv 5353533535 bbfdbfdbd
+Port is incorrect!
+
+# NICK: /nick <new_nickname>
+
