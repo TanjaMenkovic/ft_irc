@@ -194,7 +194,6 @@ void Server::accept_new_client(int server_socket, std::vector<pollfd>& fds) {
     send(client_socket, prompt.c_str(), prompt.size(), 0);
 
     fds.push_back({client_socket, POLLIN, 0});
-
     // Create a User instance and store it in the users map
     users[client_socket] = User(client_socket);
 }
