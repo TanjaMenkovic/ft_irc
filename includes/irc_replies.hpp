@@ -71,7 +71,7 @@
 # define ERR_NONICKNAMEGIVEN(nickname) (":ft_irc 431 " + nickname + " :There is no nickname.\r\n")
 # define ERR_ERRONEUSNICKNAME(nickname, new_nickname) (":ft_irc 432 " + nickname + " " + new_nickname + " :Erroneus nickname\r\n")
 # define ERR_NICKNAMEINUSE(nickname, new_nickname) (":ft_irc 433 " + nickname + " " + new_nickname + " :Nickname is already in use.\r\n")
-# define RPL_NICK(nickname, username, new_nickname) (":" + nickname + "!" + username + "@ft_irc NICK " +  new_nickname + "\r\n")
+# define RPL_NICK(nickname, username, new_nickname) (":" + nickname + "!" + username + "@ft_irc NICK :" +  new_nickname + "\r\n")
 
 // // NOTICE
 // # define RPL_NOTICE(nick, username, target, message) (":" + nick + "!" + username + "@ft_irc NOTICE " + target + " " + message + "\r\n")

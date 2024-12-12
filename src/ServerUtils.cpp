@@ -15,6 +15,17 @@ void Server::send_to_joined_channels(int client_fd, std::string message)
     }
 }
 
+void Server::send_to_joined_channels_not_fd(int client_fd, std::string message)
+{
+    std::map<std::string, bool> joined_channels = users[client_fd].getJoinedChannels();
+
+    for (auto channel_name : joined_channels) {
+        auto it = channels.find(channel_name.first);
+        if (it != channels.end())
+            send_to_channel_not_fd(client_fd, channel_name.first, message);
+    }
+}
+
 // send to every user in a specific channel
 void Server::send_to_channel(std::string channel_name, std::string message) {
     for (auto it : this->users) {
