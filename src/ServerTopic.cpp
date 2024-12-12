@@ -108,16 +108,12 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
            std::cout << "Channel name is missing\n";
            return ; 
         }
-        message = "Channel's" + channel_name + "topic changed into " + new_topic + "\n";
+        // >> :tvalimak_!~tvalimak@freenode-ebn.s3h.4nuk5f.IP TOPIC #channel1 :lol
+        message = RPL_CHANGETOPIC(users[client_fd].getNickname(), users[client_fd].getUsername(), channels[tokens[0]].getName(), new_topic);
         channels[tokens[0]].setTopic(new_topic);
         std::cout << "Channel's " << channel_name << " topic changed into " << channels[tokens[0]].getTopic() << "\n";
         send_to_channel(channels[tokens[0]].getName(), message);
         std::cout << "Inside topic 4\n";
         }
     }
-	// if no channelname is given, check if the command was input on a channel that the user is joined in
-    // if (tokens.size() == 0) {
-    //     // first get the channel the user is inside of
-
-    // }
 }
