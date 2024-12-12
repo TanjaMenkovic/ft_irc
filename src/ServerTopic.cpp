@@ -40,6 +40,8 @@ namespace irc
 // if it's true only operators can change
 // else anyone can
 
+// when inside #channel1 and command /topic asd is used, other client that is not insde that
+// channel gets the topic in format: " Topic for asd: " when it gives command /topic #channel1
 
 void Server::topic(int client_fd, std::vector<std::string> tokens) {
 	std::string channel_name;
@@ -56,8 +58,8 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
         return ;
     }
     std::cout << "Inside topic 0\n";
-    // first if is to check if the command is provided with channelname but no other params, in this case we just want to return the topic
-    // of the given channel if it exists
+    // first if block is to check if the command is provided with channelname but no other params,
+    // in this case we just want to return the topic of the given channel if it exists
     if (tokens[0].at(0) == '#' && tokens.size() == 1) {
         // get the topic of the channel
         topic = channels[tokens[0]].getTopic();
@@ -67,6 +69,7 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
             send_to_user(client_fd, message);
             return ;
             }
+        channel_name = channels[tokens[0]].getName();
         message = RPL_TOPIC(users[client_fd].getNickname(), channel_name, topic);
         send_to_user(client_fd, message);
         return ;
@@ -100,9 +103,10 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
             }
             new_topic += tokens[i];
         }
-        message = "Channel's" + tokens[0] + "topic changed into" + new_topic + "\n";
+        channel_name = channels[tokens[0]].getName();
+        message = "Channel's" + channel_name + "topic changed into " + new_topic + "\n";
         channels[tokens[0]].setTopic(new_topic);
-        std::cout << "Channel topic changed into" << channels[tokens[0]].getTopic() << "\n";
+        std::cout << "Channel's topic changed into" << channels[tokens[0]].getTopic() << "\n";
         send_to_channel(channels[tokens[0]].getName(), message);
         std::cout << "Inside topic 4\n";
         }
