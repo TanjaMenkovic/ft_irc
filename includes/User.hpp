@@ -1,9 +1,7 @@
 #pragma once
 
 #include <string>
-#include <iostream>
 #include <map>
-#include <sys/socket.h>
 
 /*
 Class User containts:

@@ -54,14 +54,21 @@ namespace irc
             send_to_user(client_fd, error_message);
             return ;
         }
-        for (auto &[fd, user]: users) { // check that invited user not already member
+        found = false;
+        for (auto &[fd, user]: users) { // check that invited user exists on server and that invited user is not already in channel
             if (user.getNickname() == invited_user) {
+                found = true;
                 if (user.isInChannel(channel_name)) { // user already in channel
                     error_message = ERR_USERONCHANNEL(user.getUsername(), user.getNickname(), channel_name);
                     send_to_user(client_fd, error_message);
                     return ;
                 }
             }
+        }
+        if (!found) { // we didn't find invited user in server users
+            error_message = ERR_NOSUCHNICK(users[client_fd].getNickname(), invited_user);
+            send_to_user(client_fd, error_message);
+            return ;
         }
         if (!users[client_fd].isOperator(channel_name)) { // check user is operator
             error_message = ERR_CHANOPRIVSNEEDED(users[client_fd].getNickname(), channel_name);
