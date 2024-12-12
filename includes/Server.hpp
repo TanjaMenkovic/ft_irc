@@ -104,6 +104,7 @@ class Server
 
         // ServerUtils.cpp
         void send_to_joined_channels(int client_fd, std::string message);
+        void send_to_joined_channels_not_fd(int client_fd, std::string message);
         void send_to_channel(std::string channel_name, std::string message);
         void send_to_channel_not_fd(int fd, std::string channel_name, std::string message);
         void send_to_user(int client_fd, std::string message);

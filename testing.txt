@@ -1,4 +1,4 @@
-# Valid input values
+# Valid input values <--- SOLVED (irssi)
 
 ./ircserv
 Incorrect number of values!
@@ -12,8 +12,28 @@ Port is incorrect!
 ./ircserv 5353533535 bbfdbfdbd
 Port is incorrect!
 
-# NICK: /nick <new_nickname>
+./ircserv 55 gbgdbd
+Port is incorrect!
 
+incorrect password:
+./ircserv 6666 tanja
+in irssi: /connect 127.0.0.1 6666 bla
+Validating server password... ERROR: Incorrect password. Connection 
+          closed.
+
+----------------------------------------
+
+# NICK: /nick <new_nickname> <--- SOLVED (irssi)
+
+/nick haha
+it changes our username to haha
+
+but if we try to change other user to have the same nickname, it will complain
+
+/nick ,csacasc
+it will show errors for incorrect nicknames in window1 and it won't change it
+
+----------------------------------------
 
 # KICK
 /kick idiot(user not doesn't exist)
@@ -32,6 +52,7 @@ ohertzbe1 was kicked from #chan2 by ft_irc [  ] (showing for everyone in channel
 operator kicking himself
 /kick <self>
 
+----------------------------------------
 
 # INVITE 
 invite user to channel
@@ -41,4 +62,6 @@ invite user, have user join, then kick user, do +i, and user cannot join before 
 #PRIVMSG
 
 writing privmsg to channel working
+----------------------------------------
+
 
