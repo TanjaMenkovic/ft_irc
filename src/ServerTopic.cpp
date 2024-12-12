@@ -42,6 +42,8 @@ namespace irc
 
 // when inside #channel1 and command /topic asd is used, other client that is not insde that
 // channel gets the topic in format: " Topic for asd: " when it gives command /topic #channel1
+// Response in freenode when /topic on channel is used from server view
+//>> :*.freenode.net 332 tvalimak_ #channel1 :blah
 
 void Server::topic(int client_fd, std::vector<std::string> tokens) {
 	std::string channel_name;
@@ -54,6 +56,12 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
     if (channels.find(tokens[0]) == channels.end()) {
         std::cout << "ERR_NOSUCHCHANNEL\n";
         message = ERR_NOSUCHCHANNEL(users[client_fd].getNickname(), tokens[0]);
+        send_to_user(client_fd, message);
+        return ;
+    }
+    if (tokens.size() == 0) {
+        std::cout << "ERR_NEEDMOREPARAMS\n";
+        message = ERR_NEEDMOREPARAMS(users[client_fd].getNickname(), tokens[0]);
         send_to_user(client_fd, message);
         return ;
     }
@@ -117,3 +125,21 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
         }
     }
 }
+
+/*
+
+<< TOPIC 
+>> :*.freenode.net 461 tvalimak_ TOPIC :Not enough parameters.
+>> :*.freenode.net 650 tvalimak_ TOPIC :<channel> [:<topic>]
+<< TOPIC channel1
+>> :*.freenode.net 403 tvalimak_ channel1 :No such channel
+<< TOPIC #channel1
+>> :*.freenode.net 331 tvalimak_ #channel1 :No topic is set.
+<< TOPIC #channel1
+>> :*.freenode.net 332 tvalimak_ #channel1 :blah
+>> :*.freenode.net 333 tvalimak_ #channel1 tvalimak!~tvalimak@freenode-l2g.s3h.4nuk5f.IP :1734017672
+<< PING *.freenode.net
+>> :*.freenode.net PONG *.freenode.net :*.freenode.net
+
+
+*/
