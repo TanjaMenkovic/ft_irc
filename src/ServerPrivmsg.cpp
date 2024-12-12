@@ -23,8 +23,20 @@ namespace irc
         std::string message = "";
         // need to check that either #channel or user exists
         if (tokens[0].at(0) == '#') {
-            if (!users[client_fd].isInChannel(tokens[0])) {
+            bool found = false;
+            for (auto &[chan_name, channel]: channels) { // see if channel exists
+                if (chan_name == tokens[0]) {
+                    found = true;
+                    break ;
+                }
+            }
+            if (!found) { // channel doesn't exist
                 message = ERR_NOSUCHNICK(users[client_fd].getNickname(), tokens[0]);
+                send_to_user(client_fd, message);
+                return ;
+            }
+            if (!users[client_fd].isInChannel(tokens[0])) { // channel exists, so we check if user is in channel
+                message = ERR_CANNOTSENDTOCHAN(users[client_fd].getNickname(), tokens[0]);
                 send_to_user(client_fd, message);
                 return ;
             }

@@ -35,5 +35,10 @@ operator kicking himself
 
 # INVITE 
 invite user to channel
+invite user to channel with +i
+invite user, have user join, then kick user, do +i, and user cannot join before being invited again
 
+#PRIVMSG
+
+writing privmsg to channel working
 
