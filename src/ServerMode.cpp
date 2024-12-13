@@ -62,6 +62,7 @@ void Server::handle_mode(int client_fd, std::vector<std::string> tokens)
             channel_password(client_fd, channel, "+k", tokens[2]);
         } else if (mode[1] == 'o' && tokens.size() >= 3) {
             channel_user(client_fd, channel, "+o", tokens[2]);
+            std::cout << "TOKENS[2]: " << tokens[2] << std::endl; // <-- REMOVE ME
         } else if (mode[1] == 'l' && tokens.size() >= 3) {
             channel_limit(client_fd, channel, "+l", tokens[2]);
         } else { // incorrect mode
@@ -159,21 +160,20 @@ bool Server::is_in_channel(std::string user_nickname, std::string channel_name, 
 
 void Server::channel_user(int client_fd, std::string channel_name, std::string mode, std::string user_nickname) {
     std::string message;
-    bool is_operator;
+    bool is_operator = false;
 
-    if (mode == "+o") {
+    if (mode == "+o")
         is_operator = true;
-    } else {
-        is_operator = false;
-    }
 
     if (is_in_channel(user_nickname, channel_name, is_operator) == false) {
         message = ERR_NOSUCHNICK(user_nickname, mode);
         send_to_user(client_fd, message);
+        std::cout << "IT FAILS!!!" << std::endl; // <-- REMOVE ME
         return ;
     }
 
-    mode += " " + user_nickname;
+    std::cout << "IT DIDN'T FAIL!!!" << std::endl; // <-- REMOVE ME
+    mode += " :" + user_nickname;
     message = MODE_USERMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name, mode);
     send_to_joined_channels(client_fd, message);
 }

@@ -39,7 +39,7 @@
 
 // // MODE
 // /* user mode */
-# define MODE_USERMSG(nickname, username, channel_name, mode) (":" + nickname + "!~" + username + "@ft_irc" + " MODE " + channel_name + " :" + mode + "\r\n")
+# define MODE_USERMSG(nickname, username, channel_name, mode) (":" + nickname + "!~" + username + "@ft_irc" + " MODE " + channel_name + " " + mode + "\r\n")
 // #define ERR_UMODEUNKNOWNFLAG(client) (":ft_irc 501 " + client + " :Unknown MODE flag\r\n")
 // #define ERR_USERSDONTMATCH(client) ("502 " + client + " :Cant change mode for other users\r\n")
 // #define RPL_UMODEIS(client, mode) (":ft_irc 221 " + client + " " + mode + "\r\n")
