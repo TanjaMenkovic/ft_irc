@@ -10,7 +10,7 @@
 
 // # define ERR_UNKNOWNCOMMAND(client, command) (":ft_irc 421 " + client + " " + command + " :Unknown command\r\n")
 
-// // INVITE
+// INVITE
 # define ERR_NEEDMOREPARAMS(nickname, command) (":ft_irc 461 " + nickname + " " + command + " :Not enough parameters.\r\n")
 # define ERR_NOSUCHCHANNEL(nickname, channel) (":ft_irc 403 " + nickname + " " + channel + " :No such channel\r\n")
 # define ERR_NOTONCHANNEL(nickname, channel) (":ft_irc 442 " + nickname + " #" + channel + " :The user is not on this channel.\r\n")
@@ -94,8 +94,7 @@
 # define RPL_QUIT(username, nickname, reason) (":" + nickname + "!~" + username + "@ft_irc" + " QUIT :Quit: " + reason + "\r\n")
 // # define RPL_ERROR(user_id, reason) (user_id + " ERROR :" + reason + "\r\n")
 
-// // PRIVMSG
-//>> :zirconium.libera.chat 401 ohertzbe asdsad :No such nick/channel
+// PRIVMSG
 # define ERR_NOSUCHNICK(nickname, target) (":ft_irc 401 " + nickname + " " + target + " :No such nick/channel\r\n")
 // # define ERR_NORECIPIENT(client) ("411 " + client + " :No recipient given PRIVMSG\r\n")
 // # define ERR_NOTEXTTOSEND(client) ("412 " + client + " :No text to send\r\n")

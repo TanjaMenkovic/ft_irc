@@ -2,17 +2,8 @@
 
 namespace irc 
 {
-
-/*
-funcitons  for adding user in the channel, removing user from the channel
-adding operators and removing operators, checking is it operator or not
-
-*/
-
-
-/*
-did we reach the limit how many users can be in the channel
-*/
+    
+// did we reach the limit how many users can be in the channel
 bool Server::IsLimitReached(const std::string &channel_name) {
     int limit = channels.find(channel_name)->second.getUserLimit();
     int number_of_users = 0;

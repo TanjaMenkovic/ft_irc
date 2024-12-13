@@ -54,15 +54,12 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 invite(client_fd, tokens);
                 break;
             case 3:
-                std::cout << "Handle TOPIC logic\n";
                 topic(client_fd, tokens);
                 break;
             case 4:
-                std::cout << "Handle MODE logic\n";
                 handle_mode(client_fd, tokens);
                 break;
             case 5:
-                std::cout << "Handle JOIN logic\n";
                 if (tokens.size() == 1) {
                     tokens.push_back("");
                 }
@@ -77,22 +74,19 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 privmsg(client_fd, tokens);
                 break;
             case 7:
-                std::cout << "at NICK case in switch\n";
                 if (tokens.size() < 1)  {
                     tokens.push_back("");
                 }
                 change_nick(client_fd, tokens[0]);
                 break;
             case 8:
-                std::cout << "Handle PING logic\n";
                 handle_ping_pong(client_fd, tokens);
                 break;
             case 9:
-                std::cout << "Handle QUIT logic\n";
                 quit(client_fd, tokens[0]);
                 break;
             default:
-                std::cout << "Unknown command\n";
+                std::cout << "Unknown command\n"; // <-- WHAT IF COMMAND IS UNKNOWN?
                 break;
         }
     } else {
