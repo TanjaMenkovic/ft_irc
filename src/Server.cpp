@@ -1,11 +1,4 @@
 #include "../includes/Server.hpp"
-#include "../includes/User.hpp"
-#include "../includes/irc_replies.hpp"
-#include <cstring>    // For memset
-#include <unistd.h>   // For close()
-#include <sstream>    // For std::stringstream
-#include <iostream>   // For std::cout, std::cerr
-#include <poll.h>     // For pollfd
 
 std::atomic<bool> server_running(true);
 
@@ -80,7 +73,6 @@ int Server::setup_server() {
     return true;
 }
 
-// Helper function to create the server socket
 int Server::create_socket() const {
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket < 0) {
@@ -93,7 +85,6 @@ int Server::create_socket() const {
     return server_socket;
 }
 
-// Helper function to bind and listen on the socket
 bool Server::bind_and_listen(int server_socket) const {
     struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
@@ -153,33 +144,6 @@ bool Server::poll_connections(int server_socket, std::vector<pollfd>& fds) {
     return false;
 }
 
-/*
-// Helper function to handle polling and client connections
-bool Server::poll_connections(int server_socket, std::vector<pollfd>& fds) {
-    int poll_count = poll(fds.data(), fds.size(), -1);
-    if (poll_count < 0) {
-        perror("Poll failed");
-        return false;
-    }
-
-    for (size_t i = 0; i < fds.size(); ++i) {
-        if (fds[i].revents & POLLIN) {
-            if (fds[i].fd == server_socket) {
-                accept_new_client(server_socket, fds);
-            } else {
-                int client_fd = fds[i].fd;
-                if (!process_client_input(client_fd)) {
-                    close_client(client_fd, fds, i);
-                    --i; // Adjust index as client is removed
-                }
-            }
-        }
-    }
-
-    return true;
-}*/
-
-// Helper function to accept a new client
 void Server::accept_new_client(int server_socket, std::vector<pollfd>& fds) {
     struct sockaddr_in client_addr;
     socklen_t client_len = sizeof(client_addr);
@@ -198,8 +162,6 @@ void Server::accept_new_client(int server_socket, std::vector<pollfd>& fds) {
     users[client_socket] = User(client_socket);
 }
 
-// I guess we need to figue out what IRSSI is expecting from the server to know its connected
-
 bool Server::process_client_input(int client_fd) {
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
@@ -211,7 +173,7 @@ bool Server::process_client_input(int client_fd) {
     }
 
     // Print the raw buffer to debug incoming data
-    std::cout << "Raw buffer received: " << buffer << "\n";
+    std::cout << "Raw buffer received: " << buffer << "\n"; // <-- CHECK OUTPUTS LIKE THIS IF WE MUST DELETE THEM
 
     // Handle potential IRC line endings and command prefixes
     std::string client_data(buffer);
@@ -226,7 +188,7 @@ bool Server::process_client_input(int client_fd) {
         }
 
         // Print each cleaned line
-        std::cout << "Cleaned Line: " << line << "\n";
+        std::cout << "Cleaned Line: " << line << "\n"; // <-- CHECK OUTPUTS LIKE THIS IF WE MUST DELETE THEM
 
         if (line.empty()) {
             continue;  // Skip empty lines
@@ -248,7 +210,6 @@ bool Server::process_client_input(int client_fd) {
     return true;
 }
 
-// Helper function to close a client connection
 void Server::close_client(int client_fd, std::vector<pollfd>& fds, size_t index) {
     close(client_fd);
     fds.erase(fds.begin() + index);

@@ -4,28 +4,25 @@ int main(int argc, char **argv)
 {
     if (argc != 3)
     {
-        //error
         std::cerr << "Incorrect number of values!" << std::endl;
         return EXIT_FAILURE;
     }
 
     if (!isValidPort(argv[1]))
     {
-        //errorr
         std::cerr << "Port is incorrect!" << std::endl;
         return EXIT_FAILURE;
     }
 
     if (!isValidPassword(argv[2]))
     {
-        //error
         std::cerr << "Password is incorrect!" << std::endl;
         return EXIT_FAILURE;
     }
 
     int input;
     try {
-    input = std::stoi(argv[1]);
+        input = std::stoi(argv[1]);
     } catch (const std::invalid_argument& e) {
         std::cerr << "Error: Invalid argument provided for port. It must be a number.\n";
         return 1; 
@@ -42,8 +39,7 @@ int main(int argc, char **argv)
 
     if (server.setup_server() == false)
     {
-        //error
-        std::cout << "Server setup failed!" << std::endl;
+        std::cerr << "Server setup failed!" << std::endl;
         return EXIT_FAILURE;
     }
 

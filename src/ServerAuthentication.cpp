@@ -44,7 +44,6 @@ void Server::handle_user(int client_fd, const std::string& line)
     }
 }
 
-// Helper function to handle the password phase
 void Server::handle_password_phase(int client_fd, const std::string& line) {
     if (line.find("PASS ") == 0) {
         std::string client_password = line.substr(5); // Extract password
@@ -60,6 +59,9 @@ void Server::handle_password_phase(int client_fd, const std::string& line) {
     }
 }
 
+/*
+Function that checks if username, nickname and passward are handled properly
+*/
 void Server::authentication(int client_fd, std::string line) {
     if (this->users[client_fd].getNickReceived() == false) {
         handle_nick(client_fd, line);
@@ -84,13 +86,13 @@ void Server::authentication(int client_fd, std::string line) {
 void Server::send_welcome_message(int client_fd, const std::string& nickname) {
     std::string welcome_msg = ":ft_irc 001 " + nickname + " :Welcome to the IRC Network, " + nickname + "!\r\n";
     send(client_fd, welcome_msg.c_str(), welcome_msg.length(), 0);
-    std::cout << "Sent welcome message to client: " << nickname << "\n";
+    std::cout << "Sent welcome message to client: " << nickname << std::endl;;
 }
 
 void Server::send_mode_message(int client_fd, const std::string& nickname) {
     std::string welcome_msg = ":ft_irc 002 " + nickname + " :Your host is ft_irc.\r\n";
     send(client_fd, welcome_msg.c_str(), welcome_msg.length(), 0);
-    std::cout << "Sent welcome message to client: " << nickname << "\n";
+    std::cout << "Sent welcome message to client: " << nickname << std::endl;
 }
 
 }

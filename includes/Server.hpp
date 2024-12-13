@@ -1,18 +1,18 @@
 #pragma once
 
-#include <iostream>
-#include <cstring>
+#include <iostream> // For std::cout, std::cerr
+#include <cstring> // For memset
 #include <cstdlib>
 #include <cstdio>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
-#include <cstring>
+#include <unistd.h> // For close()
+#include <cctype>  // For std::isspace
 #include <signal.h>
 #include <vector>
-#include <poll.h>
-#include <sstream>
+#include <poll.h> // For pollfd
+#include <sstream> // For std::stringstream
 #include <map>
 #include <unordered_map>
 #include <atomic>
