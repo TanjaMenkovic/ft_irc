@@ -93,9 +93,6 @@ void Server::handle_mode(int client_fd, std::vector<std::string> tokens)
         send_to_user(client_fd, message);
         return ;
     } 
-
-
-    std::cout << "Finished processing MODE command for channel " << channel << std::endl;
 }
 
 bool Server::check_if_operator(int client_fd, std::string channel_name) {
@@ -148,9 +145,9 @@ void Server::channel_password(int client_fd, std::string channel_name, std::stri
 }
 
 bool Server::is_in_channel(std::string user_nickname, std::string channel_name, bool is_operator) {
-    for (auto it : this->users) {
-        if (it.second.getNickname() == user_nickname && it.second.isInChannel(channel_name)) {
-            it.second.SetOperator(channel_name, is_operator);
+    for (auto &[fd, user]: this->users) {
+        if (user.getNickname() == user_nickname && user.isInChannel(channel_name)) {
+            user.SetOperator(channel_name, is_operator);
             return true;
         }
     }
@@ -159,23 +156,20 @@ bool Server::is_in_channel(std::string user_nickname, std::string channel_name, 
 
 void Server::channel_user(int client_fd, std::string channel_name, std::string mode, std::string user_nickname) {
     std::string message;
-    bool is_operator;
+    bool is_operator = false;
 
-    if (mode == "+o") {
+    if (mode == "+o")
         is_operator = true;
-    } else {
-        is_operator = false;
-    }
 
+    std::cout << channel_name << " " << user_nickname << " " << is_operator << std::endl;
     if (is_in_channel(user_nickname, channel_name, is_operator) == false) {
         message = ERR_NOSUCHNICK(user_nickname, mode);
         send_to_user(client_fd, message);
         return ;
     }
-
     mode += " " + user_nickname;
     message = MODE_USERMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name, mode);
-    send_to_joined_channels(client_fd, message);
+    send_to_channel(channel_name, message);
 }
 
 static bool isValidLimit(const std::string& str) 
