@@ -10,13 +10,11 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
 
     // first check if the channel exists if channelname param is provided
     if (channels.find(tokens[0]) == channels.end()) {
-        std::cout << "ERR_NOSUCHCHANNEL\n";
         message = ERR_NOSUCHCHANNEL(users[client_fd].getNickname(), tokens[0]);
         send_to_user(client_fd, message);
         return ;
     }
     if (tokens.size() == 0) {
-        std::cout << "ERR_NEEDMOREPARAMS\n";
         message = ERR_NEEDMOREPARAMS(users[client_fd].getNickname(), tokens[0]);
         send_to_user(client_fd, message);
         return ;
@@ -42,7 +40,6 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
     if (tokens[0].at(0) == '#' && tokens.size() > 1) {
         if (!users[client_fd].isInChannel(tokens[0])) {
             // user is not part of the given channel
-            std::cout << "ERR_NOTONCHANNEL\n";
         	message = ERR_NOTONCHANNEL(users[client_fd].getNickname(), tokens[0]);
         	send_to_user(client_fd, message);
         	return ;
@@ -68,7 +65,6 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
         }
         message = RPL_CHANGETOPIC(users[client_fd].getNickname(), users[client_fd].getUsername(), channels[tokens[0]].getName(), new_topic);
         channels[tokens[0]].setTopic(new_topic);
-        std::cout << "Channel's " << channel_name << " topic changed into " << channels[tokens[0]].getTopic() << "\n";
         send_to_channel(channels[tokens[0]].getName(), message);
         }
     }
