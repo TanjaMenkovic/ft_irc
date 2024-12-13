@@ -33,7 +33,7 @@ but if we try to change other user to have the same nickname, it will complain
 /nick ,csacasc
 it will show errors for incorrect nicknames in window1 and it won't change it
 
-----------------------------------------
+----------------------------------------------------------------------------------------------------
 
 # KICK
 /kick idiot(user not doesn't exist)
@@ -52,16 +52,28 @@ ohertzbe1 was kicked from #chan2 by ft_irc [  ] (showing for everyone in channel
 operator kicking himself
 /kick <self>
 
-----------------------------------------
+trying to kick user from a channel that doesn't exist
+
+-----------------------------------------------------------------------------------------------------
 
 # INVITE 
 invite user to channel
 invite user to channel with +i
 invite user, have user join, then kick user, do +i, and user cannot join before being invited again
+invite user that doesn't exist
+invite user to channel that doesn't exist
 
-#PRIVMSG
+-------------------------------------------------------------------------------------------------------
 
+# PRIVMSG
 writing privmsg to channel working
-----------------------------------------
+writing privmsg to a channel when not part of channel
+writing privmsg to user that doesn't exist
+writing privmsg to another user, user being able to reply
+joining channel, being kicked from channel, and trying to send message afterward to channel
 
+
+------------------------------------------------------------------------------------------------------------
+
+#
 
