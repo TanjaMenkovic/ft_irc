@@ -75,5 +75,21 @@ joining channel, being kicked from channel, and trying to send message afterward
 
 ------------------------------------------------------------------------------------------------------------
 
-#
+# JOIN
+join a new channel
+join an existing channel
+trying to join same chan over and over
+joining channel after being kicked 
+
+-------------------------------------------------------------------------------------------------------------
+
+# MODE
+
+trying to join channel with +i, able to join with invite
+mode -i, able to join again without invite
+after /mode +o, new op not able to change topic, doesn't seem to change user to operator
+
+/mode -t works and +t
+
+// need to check -l and -k
 
