@@ -52,7 +52,7 @@ void Server::handle_password_phase(int client_fd, const std::string& line) {
             send(client_fd, error_message.c_str(), error_message.size(), 0);
             std::cerr << "Client provided an incorrect password. Connection terminated.\n";
         } else {
-            std::string success_message = "Password accepted. Welcome to the server!\n";
+            std::string success_message = "Password accepted.\n";
             send(client_fd, success_message.c_str(), success_message.size(), 0);
             this->users[client_fd].setPassReceived();
         }

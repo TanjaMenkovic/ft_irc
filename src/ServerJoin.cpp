@@ -104,6 +104,9 @@ void Server::join(int client_fd, std::string channel_name, std::string channel_p
             return ;
         } 
     }
+    if (channel_name[0] != '#') {
+        channel_name = "#" + channel_name;
+    }
     addUser(client_fd, channel_name);
 }
 

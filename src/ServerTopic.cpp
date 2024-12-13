@@ -24,7 +24,6 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
     if (tokens[0].at(0) == '#' && tokens.size() == 1) {
         // get the topic of the channel
         topic = channels[tokens[0]].getTopic();
-        std::cout << topic << "\n";
         if (topic.empty()) {
             message = RPL_NOTOPIC(users[client_fd].getNickname(), tokens[0]);
             send_to_user(client_fd, message);

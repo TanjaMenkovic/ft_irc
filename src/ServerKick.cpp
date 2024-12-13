@@ -22,6 +22,9 @@ namespace irc
         std::string reason = " ";
 
         channel_name = tokens[0];
+        if (channel_name.at(0) != '#') {
+            channel_name = "#" + channel_name;
+        }
         kick_nickname = tokens[1];
         if (tokens.size() > 3) { // if we have more tokens than user we want to kick and channel, we add those to reason
             std::vector<std::string>::iterator it = tokens.begin() + 2; // it points to first reason string

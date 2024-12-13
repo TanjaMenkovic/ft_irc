@@ -169,9 +169,6 @@ bool Server::process_client_input(int client_fd) {
         return false;
     }
 
-    // Print the raw buffer to debug incoming data
-    std::cout << "Raw buffer received: " << buffer << "\n"; // <-- CHECK OUTPUTS LIKE THIS IF WE MUST DELETE THEM
-
     // Handle potential IRC line endings and command prefixes
     std::string client_data(buffer);
     std::stringstream ss(client_data);
@@ -183,9 +180,6 @@ bool Server::process_client_input(int client_fd) {
         if (!line.empty() && line.back() == '\r') {
             line.pop_back();
         }
-
-        // Print each cleaned line
-        std::cout << "Cleaned Line: " << line << "\n"; // <-- CHECK OUTPUTS LIKE THIS IF WE MUST DELETE THEM
 
         if (line.empty()) {
             continue;  // Skip empty lines
