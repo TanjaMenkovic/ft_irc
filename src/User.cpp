@@ -155,9 +155,7 @@ namespace irc
     void User::SetOperator(std::string channel_name, bool is_operator) {
         if (isInChannel(channel_name)) {
             joined_channels[channel_name] = is_operator;
-            std::cout << "11111111 SetOperator" << std::endl; // <-- REMOVE ME
         }
-        std::cout << "222222222: "<< joined_channels[channel_name] << std::endl; // <-- REMOVE ME
     }
     
 }
