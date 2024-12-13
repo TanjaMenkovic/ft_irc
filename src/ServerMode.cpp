@@ -145,7 +145,7 @@ void Server::handle_mode(int client_fd, std::vector<std::string> tokens)
         if (mode[1] == 'i' && tokens.size() >= 2) {
             channel_invite(client_fd, channel, "-i");
         } else if (mode[1] == 't' && tokens.size() >= 2) {
-            channel_topic(client_fd, channel, "+t");
+            channel_topic(client_fd, channel, "-t");
         } else if (mode[1] == 'k' && tokens.size() >= 2) {
             channel_password(client_fd, channel, "-k", "");
         } else if (mode[1] == 'o' && tokens.size() >= 3) {

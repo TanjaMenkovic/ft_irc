@@ -128,6 +128,14 @@ void Server::topic(int client_fd, std::vector<std::string> tokens) {
 
 /*
 
+    When you are in server window and ask for topic of some specific channel, with the topic returned freenode also returns this:
+    > :*.freenode.net 333 tvalimak_ #channel1 tvalimak1!~tvalimak@freenode-l2g.s3h.4nuk5f.IP :1734085191
+
+*/
+
+
+/*
+
 << TOPIC 
 >> :*.freenode.net 461 tvalimak_ TOPIC :Not enough parameters.
 >> :*.freenode.net 650 tvalimak_ TOPIC :<channel> [:<topic>]
