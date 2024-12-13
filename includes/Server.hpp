@@ -17,6 +17,8 @@
 #include <unordered_map>
 #include <atomic>
 #include <csignal>
+#include <thread>
+#include <mutex>
 
 #include "User.hpp"
 #include "Channel.hpp"

@@ -107,32 +107,55 @@ bool Server::bind_and_listen(int server_socket) const {
     return true;
 }
 
+std::mutex fds_mutex;
+
 bool Server::poll_connections(int server_socket, std::vector<pollfd>& fds) {
     while (server_running) {
-        int poll_count = poll(fds.data(), fds.size(), -1);
+        int poll_count;
+
+        {
+            std::lock_guard<std::mutex> lock(fds_mutex);
+            poll_count = poll(fds.data(), fds.size(), -1);
+        }
 
         // Handle poll errors
         if (poll_count < 0) {
             if (errno == EINTR) {
-                // Poll interrupted by signal, check shutdown_requested
-                continue;
+                continue; // Poll interrupted, continue loop
             }
             std::cerr << "Poll failed\n";
             return false;
         }
 
         // Process ready file descriptors
+        std::vector<std::thread> threads;
+
         for (size_t i = 0; i < fds.size(); ++i) {
             if (fds[i].revents & POLLIN) {
                 if (fds[i].fd == server_socket) {
-                    accept_new_client(server_socket, fds);
-                } else {
-                    int client_fd = fds[i].fd;
-                    if (!process_client_input(client_fd)) {
-                        close_client(client_fd, fds, i);
-                        --i; // Adjust index as client is removed
+                    // Accept a new client
+                    {
+                        std::lock_guard<std::mutex> lock(fds_mutex);
+                        accept_new_client(server_socket, fds);
                     }
+                } else {
+                    // Handle the client connection in a new thread
+                    int client_fd = fds[i].fd;
+
+                    threads.emplace_back([this, client_fd, &fds, i]() {
+                        if (!process_client_input(client_fd)) {
+                            std::lock_guard<std::mutex> lock(fds_mutex);
+                            close_client(client_fd, fds, i);
+                        }
+                    });
                 }
+            }
+        }
+
+        // Join threads if necessary (or detach them for long-running tasks)
+        for (auto& thread : threads) {
+            if (thread.joinable()) {
+                thread.join();
             }
         }
     }
