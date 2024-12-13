@@ -75,8 +75,6 @@ class User
 
         bool GetOperator(std::string channel_name);
         void SetOperator(std::string channel_name, bool is_operator);
-
-        // void send_numeric_reply(int reply_code, const std::string &message, const std::string &server_name);
 };
 
 }
