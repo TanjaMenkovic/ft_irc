@@ -49,12 +49,10 @@ int Server::setup_server() {
 
     int server_socket = create_socket();
     if (server_socket < 0) {
-        std::cout << "Socket wasn't created!" << std::endl;
         return false;
     }
 
     if (!bind_and_listen(server_socket)) {
-        std::cout << "Server can't listen!" << std:: endl;
         return false;
     }
 
@@ -76,7 +74,7 @@ int Server::setup_server() {
 int Server::create_socket() const {
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket < 0) {
-        perror("Socket creation failed");
+        std::cerr << "Socket creation failed\n";
         return -1;
     }
 
@@ -94,16 +92,15 @@ bool Server::bind_and_listen(int server_socket) const {
     server_addr.sin_port = htons(port);        // Set the port number
 
     if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        perror("Bind failed");
+        std::cerr << "bind failed\n";
         close(server_socket);
-        std::cout << "bind failed" << std::endl;
         return false;
     }
 
     if (listen(server_socket, 10) < 0) {
         perror("Listen failed");
         close(server_socket);
-        std::cout << "listen failed" << std::endl;
+        std::cerr << "listen failed\n";
         return false;
     }
 
@@ -120,7 +117,7 @@ bool Server::poll_connections(int server_socket, std::vector<pollfd>& fds) {
                 // Poll interrupted by signal, check shutdown_requested
                 continue;
             }
-            perror("Poll failed");
+            std::cerr << "Poll failed\n";
             return false;
         }
 
@@ -140,7 +137,7 @@ bool Server::poll_connections(int server_socket, std::vector<pollfd>& fds) {
         }
     }
 
-    printf("Shutdown requested, exiting poll loop.\n");
+    std::cout << "Shutdown requested, exiting poll loop.\n";
     return false;
 }
 
@@ -149,7 +146,7 @@ void Server::accept_new_client(int server_socket, std::vector<pollfd>& fds) {
     socklen_t client_len = sizeof(client_addr);
     int client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_len);
     if (client_socket < 0) {
-        perror("Accept failed");
+        std::cerr << "accept failed\n";
         return;
     }
 
