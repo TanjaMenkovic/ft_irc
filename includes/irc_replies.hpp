@@ -10,7 +10,7 @@
 
 // # define ERR_UNKNOWNCOMMAND(client, command) (":ft_irc 421 " + client + " " + command + " :Unknown command\r\n")
 
-// INVITE
+// // INVITE
 # define ERR_NEEDMOREPARAMS(nickname, command) (":ft_irc 461 " + nickname + " " + command + " :Not enough parameters.\r\n")
 # define ERR_NOSUCHCHANNEL(nickname, channel) (":ft_irc 403 " + nickname + " " + channel + " :No such channel\r\n")
 # define ERR_NOTONCHANNEL(nickname, channel) (":ft_irc 442 " + nickname + " #" + channel + " :The user is not on this channel.\r\n")
@@ -94,7 +94,8 @@
 # define RPL_QUIT(username, nickname, reason) (":" + nickname + "!~" + username + "@ft_irc" + " QUIT :Quit: " + reason + "\r\n")
 // # define RPL_ERROR(user_id, reason) (user_id + " ERROR :" + reason + "\r\n")
 
-// PRIVMSG
+// // PRIVMSG
+//>> :zirconium.libera.chat 401 ohertzbe asdsad :No such nick/channel
 # define ERR_NOSUCHNICK(nickname, target) (":ft_irc 401 " + nickname + " " + target + " :No such nick/channel\r\n")
 // # define ERR_NORECIPIENT(client) ("411 " + client + " :No recipient given PRIVMSG\r\n")
 // # define ERR_NOTEXTTOSEND(client) ("412 " + client + " :No text to send\r\n")
@@ -106,5 +107,9 @@
 //# define RPL_NOTOPIC(nickname, channel_name) (":ft_irc 331 " + nickname + " #" + channel_name + " :No topic is set\r\n")
 # define RPL_NOTOPIC(nickname, channel_name) (":ft_irc 331 " + nickname + channel_name + " :No topic is set\r\n")
 # define RPL_CHANGETOPIC(nickname, username, channel_name, new_topic) (":" + nickname + "!~" + username + "@ft_irc" + " TOPIC " + channel_name + " " + new_topic + "\r\n")
+// NEED TO ADD! 333	RPL_TOPICWHOTIME
+// In freenode it looks like:
+// >> :*.freenode.net 333 tvalimak_ #channel1 tvalimak1!~tvalimak@freenode-l2g.s3h.4nuk5f.IP :1734085191
+# define RPL_TOPICWHOTIME(nickname, username, channel_name) (":ft_irc 333" + nickname + " " + channel_name + " " + username + "!~" + username + "@ft_irc")
 // // USER
 // # define ERR_ALREADYREGISTERED(client) (":ft_irc 462 " + client + " :You may not reregister.\r\n")
