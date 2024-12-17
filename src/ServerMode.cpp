@@ -189,16 +189,17 @@ void Server::channel_limit(int client_fd, std::string channel_name, std::string 
     std::string message;
     int limit;
 
-    if (isValidLimit(limit_str) == false) {
-        message = ERR_INVALIDMODEPARAM(users[client_fd].getNickname(), channel_name, mode, limit_str);
-        send_to_user(client_fd, message);
-        return ;
-    }
-
-    limit = std::stoi(limit_str);
-    if (limit == 0)
-        return ;
     if (mode == "+l") {
+        if (isValidLimit(limit_str) == false) {
+            message = ERR_INVALIDMODEPARAM(users[client_fd].getNickname(), channel_name, mode, limit_str);
+            send_to_user(client_fd, message);
+            return ;
+        }
+
+        limit = std::stoi(limit_str);
+        if (limit == 0)
+            return ;
+            
         channels[channel_name].setUserLimit(limit);
         mode += " " + std::to_string(limit);
     } else {
