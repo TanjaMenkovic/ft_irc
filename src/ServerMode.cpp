@@ -105,7 +105,7 @@ void Server::channel_invite(int client_fd, std::string channel_name, std::string
     std::string message;
 
     message = MODE_USERMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name, mode);
-    send_to_joined_channels(client_fd, message);
+    send_to_channel(channel_name, message);
 
     if (mode == "+i") {
         channels[channel_name].setInviteOnly(true);
@@ -118,7 +118,7 @@ void Server::channel_topic(int client_fd, std::string channel_name, std::string 
     std::string message;
 
     message = MODE_USERMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name, mode);
-    send_to_joined_channels(client_fd, message);
+    send_to_channel(channel_name, message);
 
     if (mode == "+t") {
         channels[channel_name].setTopicRestrictedToOperators(true);
@@ -138,7 +138,7 @@ void Server::channel_password(int client_fd, std::string channel_name, std::stri
     }
     
     message = MODE_USERMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name, mode);
-    send_to_joined_channels(client_fd, message);
+    send_to_channel(channel_name, message);
 }
 
 bool Server::is_in_channel(std::string user_nickname, std::string channel_name, bool is_operator) {
@@ -211,7 +211,7 @@ void Server::channel_limit(int client_fd, std::string channel_name, std::string 
     }
     
     message = MODE_USERMSG(users[client_fd].getNickname(), users[client_fd].getUsername(), channel_name, mode);
-    send_to_joined_channels(client_fd, message);
+    send_to_channel(channel_name, message);
 }
 
 }
