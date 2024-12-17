@@ -41,6 +41,7 @@ class User
         bool user_received;
         bool pass_received;
         bool mode_received;
+        bool whois;
 
     public:
         ~User();

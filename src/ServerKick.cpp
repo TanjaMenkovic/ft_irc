@@ -2,8 +2,8 @@
 
 namespace irc 
 {
-    void Server::kick_user(const std::string& channel_name, const std::string& reason, const std::string& user_to_kick) {
-        std::string message =  RPL_KICK(channel_name, user_to_kick, reason);
+    void Server::kick_user(int client_fd, const std::string& channel_name, const std::string& reason, const std::string& user_to_kick) {
+        std::string message =  RPL_KICK(users[client_fd].getUsername(), users[client_fd].getNickname(),channel_name, user_to_kick, reason);
         send_to_channel(channel_name, message);
          // remove channel from the kicked users joined_channels
         for (auto &[id, user]: users) {
@@ -57,6 +57,6 @@ namespace irc
             return ;
         }
         // No errors, proceed to kick user
-        kick_user(channel_name, reason, kick_nickname);
+        kick_user(client_fd, channel_name, reason, kick_nickname);
     }
 }

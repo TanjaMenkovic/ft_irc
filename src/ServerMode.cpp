@@ -201,6 +201,8 @@ void Server::channel_limit(int client_fd, std::string channel_name, std::string 
     }
 
     limit = std::stoi(limit_str);
+    if (limit == 0)
+        return ;
     if (mode == "+l") {
         channels[channel_name].setUserLimit(limit);
         mode += " " + std::to_string(limit);

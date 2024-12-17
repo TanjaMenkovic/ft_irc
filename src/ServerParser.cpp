@@ -86,11 +86,13 @@ void Server::parse_commands(int client_fd, const std::string& line)
                 quit(client_fd, tokens[0]);
                 break;
             default:
-                std::cout << "Unknown command\n"; // <-- WHAT IF COMMAND IS UNKNOWN?
+                std::string message = ERR_UNKNOWNCOMMAND(users[client_fd].getNickname(), command_name);
+                send_to_user(client_fd, message);
                 break;
         }
     } else {
-        std::cout << "Unknown command\n";
+        std::string message = ERR_UNKNOWNCOMMAND(users[client_fd].getNickname(), command_name);
+        send_to_user(client_fd, message);
     }
 
 }

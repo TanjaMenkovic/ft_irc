@@ -80,7 +80,7 @@ class Server
         void send_privmsg(int client_fd, const std::string& receiver, const std::string& privmessage);
 
         // ServerKick.cpp
-        void kick_user(const std::string& channel_name, const std::string& reason, const std::string& user_to_kick);
+        void kick_user(int client_fd, const std::string& channel_name, const std::string& reason, const std::string& user_to_kick);
         void kick(int client_fd, std::vector<std::string> tokens);
 
         // ServerTopic.cpp
