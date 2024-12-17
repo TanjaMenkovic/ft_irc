@@ -39,13 +39,9 @@ void Server::handle_mode(int client_fd, std::vector<std::string> tokens)
         return ;
     }
 
-    // check separately when it is not starting with +/-
-    // if I type /mode i, irssi will not send #channal_name, so it will treat "i" as a channel nama
-    // and go to the first error for invalid channal_name
-
     const std::string& mode = tokens[1];
     if ((mode[0] == '+' || mode[0] == '-') && mode.length() == 1)
-        return ; // ignore it (check this)
+        return ; // ignore it
 
     if (mode[0] == '+' && mode.length() == 2) {
         if (check_if_operator(client_fd, channel) == false) {
@@ -158,7 +154,6 @@ void Server::channel_user(int client_fd, std::string channel_name, std::string m
     if (mode == "+o")
         is_operator = true;
 
-    std::cout << channel_name << " " << user_nickname << " " << is_operator << std::endl;
     if (is_in_channel(user_nickname, channel_name, is_operator) == false) {
         message = ERR_NOSUCHNICK(user_nickname, mode);
         send_to_user(client_fd, message);

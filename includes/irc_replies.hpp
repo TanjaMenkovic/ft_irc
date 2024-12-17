@@ -1,7 +1,5 @@
 #pragma once
 
-// # define user_id(nickname, username) (":" + nickname + "!" + username + "@ft_irc")
-
 # define ERR_UNKNOWNCOMMAND(nickname, command) (":ft_irc 421 " + nickname + " " + command + " :Unknown command\r\n")
 
 // // INVITE
@@ -20,33 +18,17 @@
 # define ERR_BADCHANNELKEY(nickname, channel_name) (":ft_irc 475 " + nickname + " " + channel_name + " :Cannot join channel (+k) - incorrect password\r\n")
 
 // // KICK
-// # define ERR_USERNOTINCHANNEL(client, nickname, channel) ("441 " + client + " " + nickname + " #" + channel + " :They aren't on that channel\r\n")
 # define ERR_CHANOPRIVSNEEDED(nickname, channel_name) (":ft_irc 482 " + nickname + " " +  channel_name + " :You're not channel operator\r\n")
 # define RPL_KICK(username, nickname, channel_name, kicked, reason) (":" + nickname + "!~" + username + "@ft_irc KICK " + channel_name + " " + kicked + " " + reason + "\r\n")
-//>> :ohertzbe!~ohertzbe@194.136.126.51 KICK #hah5 idiot :such an idiot
 
 // // MODE
-// /* user mode */
 # define MODE_USERMSG(nickname, username, channel_name, mode) (":" + nickname + "!~" + username + "@ft_irc" + " MODE " + channel_name + " " + mode + "\r\n")
-// #define ERR_UMODEUNKNOWNFLAG(client) (":ft_irc 501 " + client + " :Unknown MODE flag\r\n")
-// #define ERR_USERSDONTMATCH(client) ("502 " + client + " :Cant change mode for other users\r\n")
-// #define RPL_UMODEIS(client, mode) (":ft_irc 221 " + client + " " + mode + "\r\n")
-// /* channel mode */
-// #define MODE_CHANNELMSG(channel, mode) (":ft_irc MODE #" + channel + " " + mode + "\r\n")
-// #define MODE_CHANNELMSGWITHPARAM(channel, mode, param) (":ft_irc MODE #" + channel + " " + mode + " " + param + "\r\n")
 # define RPL_CHANNELMODEIS(nickname, channel_name, modes) (":ft_irc 324 " + nickname + " " + channel_name + " +" + modes + "\r\n")
-// #define RPL_CHANNELMODEISWITHKEY(client, channel, mode, password) (":ft_irc 324 " + client + " #" + channel + " " + mode + " " + password + "\r\n")
-#define ERR_CANNOTSENDTOCHAN(client, channel) (":ft_irc 404 " + client + " " + channel + " :Cannot send to channel\r\n")
+# define ERR_CANNOTSENDTOCHAN(nickname, channel) (":ft_irc 404 " + nickname + " " + channel + " :Cannot send to channel\r\n")
 # define ERR_CHANNELISFULL(nickname, channel_name) (":ft_irc 471 " + nickname + " " + channel_name + " :Cannot join channel (+l) - channel is full, try again later\r\n")
 # define ERR_INVITEONLYCHAN(nickname, channel_name) (":ft_irc 473 " + nickname + " " + channel_name + " :Cannot join channel (+i) - you must be invited\r\n")
 # define ERR_UNKNOWNMODE(nickname, mode) (":ft_irc 472 " + nickname + " " + mode + " :is not a recognised channel mode.\r\n")
-
-// #define ERR_CHANOPRIVSNEEDED(client, channel) (":ft_irc 482 " + client + " #" + channel + " :You're not channel operator\r\n")
 #define ERR_INVALIDMODEPARAM(nickname, channel_name, mode, param) (":ft_irc 696 " + nickname + " " + channel_name + " " + mode + " " + param + " : invalid parameter\r\n")
-// // RPL_ERR a broadcoast quand user pas +v ou operator veut parler
-//       // dans notre cas c'était tiff (client) qui voulait send a message
-//       // :lair.nl.eu.dal.net 404 tiff #pop :Cannot send to channel
-// #define RPL_ADDVOICE(nickname, username, channel, mode, param) (":" + nickname + "!" + username + "@ft_irc MODE #" + channel + " " + mode + " " + param + "\r\n")
 
 // // NICK
 # define ERR_NONICKNAMEGIVEN(nickname) (":ft_irc 431 " + nickname + " :There is no nickname.\r\n")
@@ -54,16 +36,11 @@
 # define ERR_NICKNAMEINUSE(nickname, new_nickname) (":ft_irc 433 " + nickname + " " + new_nickname + " :Nickname is already in use.\r\n")
 # define RPL_NICK(nickname, username, new_nickname) (":" + nickname + "!" + username + "@ft_irc NICK :" +  new_nickname + "\r\n")
 
-// // PASS
-// # define ERR_PASSWDMISMATCH(client) (":ft_irc 464 " + client + " :Password incorrect.\r\n")
-
 // // QUIT
 # define RPL_QUIT(username, nickname, reason) (":" + nickname + "!~" + username + "@ft_irc" + " QUIT :Quit: " + reason + "\r\n")
 
 // // PRIVMSG
 # define ERR_NOSUCHNICK(nickname, target) (":ft_irc 401 " + nickname + " " + target + " :No such nick/channel\r\n")
-// # define ERR_NORECIPIENT(client) ("411 " + client + " :No recipient given PRIVMSG\r\n")
-// # define ERR_NOTEXTTOSEND(client) ("412 " + client + " :No text to send\r\n")
 # define RPL_PRIVMSG(nick, username, target, message) (":" + nick + "!" + "~" + username + "@ft_irc PRIVMSG " + target + " " + message + "\r\n")
 
 // TOPIC

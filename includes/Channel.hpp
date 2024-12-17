@@ -43,12 +43,12 @@ class Channel
         const std::string& getName() const;
         const std::string& getTopic() const;
         const std::string& getPassword() const;
+
         int  getUserLimit() const;
         bool getInviteOnly() const;
         bool getTopicRestricted() const;
         bool getIsUserInvited(const int& fd) const;
 
-        // Setters
         void setTopic(const std::string& newTopic);
         void setPassword(const std::string& newPassword);    
         void setUserLimit(int limit);

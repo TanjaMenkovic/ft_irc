@@ -26,7 +26,7 @@ void Server::handle_nick(int client_fd, const std::string& line)
         }
 
         users[client_fd].setNickname(nickname);
-        std::cout << "User set nickname: " << users[client_fd].getNickname() << std::endl;
+        std::cout << "User's nickname: " << users[client_fd].getNickname() << std::endl;
         this->users[client_fd].setNickReceived();
     }
 }
@@ -39,7 +39,7 @@ void Server::handle_user(int client_fd, const std::string& line)
 
         std::string username = line.substr(start_pos, space_pos - start_pos);
         users[client_fd].setUsername(username);
-        std::cout << "User set username: " << users[client_fd].getUsername() << std::endl;
+        std::cout << "User's username: " << users[client_fd].getUsername() << std::endl;
         this->users[client_fd].setUserReceived();
     }
 }
@@ -86,13 +86,11 @@ void Server::authentication(int client_fd, std::string line) {
 void Server::send_welcome_message(int client_fd, const std::string& nickname) {
     std::string welcome_msg = ":ft_irc 001 " + nickname + " :Welcome to the IRC Network, " + nickname + "!\r\n";
     send(client_fd, welcome_msg.c_str(), welcome_msg.length(), 0);
-    std::cout << "Sent welcome message to client: " << nickname << std::endl;;
 }
 
 void Server::send_mode_message(int client_fd, const std::string& nickname) {
     std::string welcome_msg = ":ft_irc 002 " + nickname + " :Your host is ft_irc.\r\n";
     send(client_fd, welcome_msg.c_str(), welcome_msg.length(), 0);
-    std::cout << "Sent welcome message to client: " << nickname << std::endl;
 }
 
 }

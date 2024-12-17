@@ -26,13 +26,13 @@ bool isValidPort(const std::string& str)
     if ((str.length() > 1 && str[0] == '0') || str.length() > 5)
         return false;
 
-    if (std::stoi(str) < 1024 || std::stoi(str) > 65535) // <-- SHOULD WE CHANGE TO 49151?
+    if (std::stoi(str) < 1024 || std::stoi(str) > 49151)
         return false;
     return true;
 }
 
 /*
-Passward is not allowed to have white spaces in it
+Password is not allowed to have white spaces in it
 */
 static bool has_whitespace(const std::string& str) {
     return std::any_of(str.begin(), str.end(), ::isspace);

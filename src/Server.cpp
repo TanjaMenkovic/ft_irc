@@ -151,7 +151,7 @@ void Server::accept_new_client(int server_socket, std::vector<pollfd>& fds) {
     }
 
     std::cout << "New client connected.\n";
-    std::string prompt = "Validating server password... ";
+    std::string prompt = "Please provide PASS, NICK, USER, MODE +i... \n";
     send(client_socket, prompt.c_str(), prompt.size(), 0);
 
     fds.push_back({client_socket, POLLIN, 0});
