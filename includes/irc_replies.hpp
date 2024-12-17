@@ -2,21 +2,14 @@
 
 // # define user_id(nickname, username) (":" + nickname + "!" + username + "@ft_irc")
 
-// # define RPL_WELCOME(user_id, nickname) (":ft_irc 001 " + nickname + " :Welcome to the Internet Relay Network " + user_id + "\r\n")
-// # define RPL_YOURHOST(client, servername, version) (":ft_irc 002 " + client + " :Your host is " + servername + " (ft_irc), running version " + version + "\r\n")
-// # define RPL_CREATED(client, datetime) (":ft_irc 003 " + client + " :This server was created " + datetime + "\r\n")
-// # define RPL_MYINFO(client, servername, version, user_modes, chan_modes, chan_param_modes) (":ft_irc 004 " + client + " " + servername + " " + version + " " + user_modes + " " + chan_modes + " " + chan_param_modes + "\r\n")
-// # define RPL_ISUPPORT(client, tokens) (":ft_irc 005 " + client + " " + tokens " :are supported by this server\r\n")
-
-// # define ERR_UNKNOWNCOMMAND(client, command) (":ft_irc 421 " + client + " " + command + " :Unknown command\r\n")
+# define ERR_UNKNOWNCOMMAND(nickname, command) (":ft_irc 421 " + nickname + " " + command + " :Unknown command\r\n")
 
 // // INVITE
 # define ERR_NEEDMOREPARAMS(nickname, command) (":ft_irc 461 " + nickname + " " + command + " :Not enough parameters.\r\n")
 # define ERR_NOSUCHCHANNEL(nickname, channel) (":ft_irc 403 " + nickname + " " + channel + " :No such channel\r\n")
-# define ERR_NOTONCHANNEL(nickname, channel) (":ft_irc 442 " + nickname + " #" + channel + " :The user is not on this channel.\r\n")
+# define ERR_NOTONCHANNEL(nickname, channel) (":ft_irc 442 " + nickname + " " + channel + " :The user is not on this channel.\r\n")
 # define ERR_USERONCHANNEL(username, nickname, channel) (":ft_irc 443 " + username + " " + nickname+ " " + channel + " :Is already on channel\r\n")
 # define RPL_INVITING(operator, invited_user, channel) (":ft_irc 341 " + operator + " " + invited_user + " " + channel + "\r\n")
-// :ohertzbe!~ohertzbe@194.136.126.52 INVITE ohertzbe_ :#chan4412
 # define RPL_INVITE(nickname, username, invited, channel) (":" + nickname + "!~" + username + "@ft_irc INVITE " + invited + " " + channel + "\r\n")
 
 // JOIN
@@ -24,13 +17,12 @@
 # define RPL_NAMREPLY(nickname, channel_name, list_of_nicks) (":ft_irc 353 " + nickname + " = " + channel_name + " :" + list_of_nicks + "\r\n")
 # define RPL_ENDOFNAMES(nickname, channel_name) (":ft_irc 366 " + nickname + " " + channel_name + " :End of /NAMES list.\r\n")
 # define RPL_JOIN(nickname, username, channel_name) (":" + nickname + "!~" + username + "@ft_irc" + " JOIN :" +  channel_name + "\r\n")
-// # define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + " #" + channel + " :Cannot join channel (+b)\r\n")
-# define ERR_BADCHANNELKEY(nickname, channel_name) (":ft_irc 475 " + nickname + " #" + channel_name + " :Cannot join channel (+k) - incorrect password\r\n")
+# define ERR_BADCHANNELKEY(nickname, channel_name) (":ft_irc 475 " + nickname + " " + channel_name + " :Cannot join channel (+k) - incorrect password\r\n")
 
 // // KICK
 // # define ERR_USERNOTINCHANNEL(client, nickname, channel) ("441 " + client + " " + nickname + " #" + channel + " :They aren't on that channel\r\n")
 # define ERR_CHANOPRIVSNEEDED(nickname, channel_name) (":ft_irc 482 " + nickname + " " +  channel_name + " :You're not channel operator\r\n")
-# define RPL_KICK(channel_name, kicked, reason) (":ft_irc KICK " + channel_name + " " + kicked + " " + reason + "\r\n")
+# define RPL_KICK(username, nickname, channel_name, kicked, reason) (":" + nickname + "!~" + username + "@ft_irc KICK " + channel_name + " " + kicked + " " + reason + "\r\n")
 //>> :ohertzbe!~ohertzbe@194.136.126.51 KICK #hah5 idiot :such an idiot
 
 // // KILL
@@ -54,7 +46,7 @@
 # define ERR_UNKNOWNMODE(nickname, mode) (":ft_irc 472 " + nickname + " " + mode + " :is not a recognised channel mode.\r\n")
 
 // #define ERR_CHANOPRIVSNEEDED(client, channel) (":ft_irc 482 " + client + " #" + channel + " :You're not channel operator\r\n")
-#define ERR_INVALIDMODEPARAM(nickname, channel_name, mode, param) (":ft_irc 696 " + nickname + " #" + channel_name + " " + mode + " " + param + " : invalid parameter\r\n")
+#define ERR_INVALIDMODEPARAM(nickname, channel_name, mode, param) (":ft_irc 696 " + nickname + " " + channel_name + " " + mode + " " + param + " : invalid parameter\r\n")
 // // RPL_ERR a broadcoast quand user pas +v ou operator veut parler
 //       // dans notre cas c'était tiff (client) qui voulait send a message
 //       // :lair.nl.eu.dal.net 404 tiff #pop :Cannot send to channel

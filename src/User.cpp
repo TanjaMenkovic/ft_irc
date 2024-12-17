@@ -11,6 +11,7 @@ namespace irc
         this->user_received = false;
         this->pass_received = false;
         this->mode_received = false;
+        this->whois = false;
     }
 
     User::User() : fd(-1), nickname(""), username("") 
@@ -20,6 +21,7 @@ namespace irc
         this->user_received = false;
         this->pass_received = false;
         this->mode_received = false;
+        this->whois = false;
     }
 
     User::User(std::string nickname, std::string username, int fd): fd(fd), nickname(nickname), username(username) {}
