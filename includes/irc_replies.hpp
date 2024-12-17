@@ -90,9 +90,7 @@
 // # define RPL_PONG(user_id, token) (user_id + " PONG " + token + "\r\n")
 
 // // QUIT
-// :tvalimak_!~tvalimak@freenode-l2g.s3h.4nuk5f.IP QUIT :Quit: leaving
 # define RPL_QUIT(username, nickname, reason) (":" + nickname + "!~" + username + "@ft_irc" + " QUIT :Quit: " + reason + "\r\n")
-// # define RPL_ERROR(user_id, reason) (user_id + " ERROR :" + reason + "\r\n")
 
 // // PRIVMSG
 //>> :zirconium.libera.chat 401 ohertzbe asdsad :No such nick/channel
@@ -102,14 +100,8 @@
 # define RPL_PRIVMSG(nick, username, target, message) (":" + nick + "!" + "~" + username + "@ft_irc PRIVMSG " + target + " " + message + "\r\n")
 
 // TOPIC
-//# define RPL_TOPIC(nickname, channel_name, topic) (":ft_irc 332 " + nickname + " #" + channel_name + " " + topic + "\r\n")
 # define RPL_TOPIC(nickname, channel_name, topic) (":ft_irc 332 " + nickname + " " + channel_name + " " + topic + "\r\n")
-//# define RPL_NOTOPIC(nickname, channel_name) (":ft_irc 331 " + nickname + " #" + channel_name + " :No topic is set\r\n")
 # define RPL_NOTOPIC(nickname, channel_name) (":ft_irc 331 " + nickname + channel_name + " :No topic is set\r\n")
 # define RPL_CHANGETOPIC(nickname, username, channel_name, new_topic) (":" + nickname + "!~" + username + "@ft_irc" + " TOPIC " + channel_name + " " + new_topic + "\r\n")
-// NEED TO ADD! 333	RPL_TOPICWHOTIME
-// In freenode it looks like:
-// >> :*.freenode.net 333 tvalimak_ #channel1 tvalimak1!~tvalimak@freenode-l2g.s3h.4nuk5f.IP :1734085191
-# define RPL_TOPICWHOTIME(nickname, username, channel_name) (":ft_irc 333" + nickname + " " + channel_name + " " + username + "!~" + username + "@ft_irc")
 // // USER
 // # define ERR_ALREADYREGISTERED(client) (":ft_irc 462 " + client + " :You may not reregister.\r\n")
